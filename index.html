@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#11110f">
+  <meta name="description" content="Catálogo de insumos para cámara, iluminación, sonido y producción audiovisual.">
+  <title>KIMUN | Insumos para cine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <header class="site-header">
+    <a class="brand" href="#inicio" aria-label="KIMUN, inicio">
+      <span class="brand-mark"><i></i><i></i><i></i></span>
+      <span>KIMUN</span>
+    </a>
+    <nav aria-label="Navegación principal">
+      <a href="#catalogo">Catálogo</a>
+      <a href="#como-comprar">Cómo comprar</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+    <button class="quote-button" id="openCart" type="button" aria-label="Abrir cotización">
+      Cotización <span id="cartCount">0</span>
+    </button>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="hero-copy">
+        <p class="eyebrow">Insumos para rodaje · Santiago de Chile</p>
+        <h1>Todo lo que el set <em>necesita.</em></h1>
+        <p class="hero-lead">Consumibles y accesorios para cámara, iluminación, sonido y producción. Selecciona tus productos y solicita una cotización en minutos.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#catalogo">Ver catálogo</a>
+          <button class="button ghost" id="heroQuote" type="button">Armar cotización</button>
+        </div>
+        <div class="hero-meta">
+          <span>Precios en CLP</span>
+          <span>Atención personalizada</span>
+          <span>Despacho coordinado</span>
+        </div>
+      </div>
+      <div class="hero-art" aria-label="Composición gráfica de elementos de cine">
+        <div class="film-frame frame-a"><span>01</span></div>
+        <div class="film-frame frame-b"><span>24</span></div>
+        <div class="lens"><div class="lens-core"></div></div>
+        <p class="vertical-copy">CAMERA · LIGHT · SOUND · GRIP</p>
+      </div>
+    </section>
+
+    <section class="catalog-section" id="catalogo">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Catálogo 2026</p>
+          <h2>Preparados para el próximo llamado.</h2>
+        </div>
+        <p id="catalogSummary">Cargando inventario…</p>
+      </div>
+
+      <div class="catalog-tools">
+        <label class="search-box">
+          <span aria-hidden="true">⌕</span>
+          <input id="searchInput" type="search" placeholder="Buscar cinta, batería, limpieza…" autocomplete="off">
+        </label>
+        <div class="category-tabs" id="categoryTabs" role="tablist" aria-label="Categorías"></div>
+      </div>
+
+      <div class="sync-note" id="syncNote" hidden></div>
+      <div class="product-grid" id="productGrid" aria-live="polite"></div>
+      <div class="empty-state" id="emptyState" hidden>
+        <strong>No encontramos productos.</strong>
+        <span>Prueba con otra palabra o categoría.</span>
+      </div>
+    </section>
+
+    <section class="purchase-flow" id="como-comprar">
+      <div class="flow-title">
+        <p class="eyebrow">Compra asistida</p>
+        <h2>Del listado al set,<br>sin vueltas.</h2>
+      </div>
+      <ol class="steps">
+        <li><span>01</span><div><strong>Selecciona</strong><p>Agrega los insumos y cantidades que necesita tu producción.</p></div></li>
+        <li><span>02</span><div><strong>Solicita</strong><p>Envía la lista por WhatsApp para confirmar stock y entrega.</p></div></li>
+        <li><span>03</span><div><strong>Coordina</strong><p>Definimos pago, retiro o despacho directamente contigo.</p></div></li>
+      </ol>
+    </section>
+
+    <section class="contact-section" id="contacto">
+      <p class="eyebrow">Contacto directo</p>
+      <h2>¿Buscas algo que no aparece?</h2>
+      <p>Cuéntanos qué necesita el rodaje. Revisamos disponibilidad y alternativas.</p>
+      <button class="button light" id="contactButton" type="button">Hablar por WhatsApp</button>
+    </section>
+  </main>
+
+  <footer>
+    <a class="brand brand-footer" href="#inicio"><span class="brand-mark"><i></i><i></i><i></i></span><span>KIMUN</span></a>
+    <p>Insumos para cine y producción audiovisual.</p>
+    <p>© <span id="year"></span> KIMUN SpA</p>
+  </footer>
+
+  <div class="scrim" id="scrim" hidden></div>
+  <aside class="cart" id="cart" aria-hidden="true" aria-labelledby="cartTitle">
+    <div class="cart-header">
+      <div><p class="eyebrow">Tu selección</p><h2 id="cartTitle">Solicitar cotización</h2></div>
+      <button class="icon-button" id="closeCart" type="button" aria-label="Cerrar">×</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-empty" id="cartEmpty">
+      <span class="empty-reel">○</span>
+      <strong>Tu lista está vacía</strong>
+      <p>Agrega productos desde el catálogo.</p>
+    </div>
+    <div class="cart-footer">
+      <div class="cart-total"><span>Total referencial</span><strong id="cartTotal">$0</strong></div>
+      <p>Precio sujeto a confirmación de stock. IVA y despacho se confirman en la cotización.</p>
+      <button class="button primary full" id="sendQuote" type="button" disabled>Enviar por WhatsApp</button>
+    </div>
+  </aside>
+
+  <template id="productTemplate">
+    <article class="product-card">
+      <div class="product-media">
+        <img alt="" loading="lazy">
+        <div class="product-placeholder"><span></span><small></small></div>
+        <span class="product-category"></span>
+      </div>
+      <div class="product-body">
+        <div class="product-copy"><h3></h3><p></p></div>
+        <div class="product-bottom"><strong class="product-price"></strong><button type="button" class="add-button" aria-label="Agregar producto">+</button></div>
+      </div>
+    </article>
+  </template>
+
+  <script src="config.js"></script>
+  <script src="catalog-fallback.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
