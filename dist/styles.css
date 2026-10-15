@@ -78,8 +78,8 @@ body.cart-open { overflow: hidden; }
 .product-card { border: 1px solid var(--line); background: rgba(255,255,255,.2); min-width: 0; transition: transform .22s ease, box-shadow .22s ease; }
 .product-card:hover { transform: translateY(-5px); box-shadow: 0 20px 45px rgba(23,23,19,.09); }
 .product-media { aspect-ratio: 1.13; background: var(--paper-2); position: relative; overflow: hidden; }
-.product-media img { width: 100%; height: 100%; object-fit: cover; display: none; }
-.product-media.has-image img { display: block; }
+.product-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0; transition: opacity .25s ease; }
+.product-media.has-image img { opacity: 1; }
 .product-media.has-image .product-placeholder { display: none; }
 .product-placeholder { width: 100%; height: 100%; display: grid; place-items: center; position: relative; }
 .product-placeholder::before { content: ""; position: absolute; width: 42%; aspect-ratio: 1; border: 1px solid rgba(23,23,19,.25); border-radius: 50%; box-shadow: inset 0 0 0 12px rgba(23,23,19,.03); }
