@@ -17,7 +17,7 @@
 
   async function loadCatalog() {
     if (!config.apiUrl) {
-      showNote("Vista de catálogo: falta conectar la URL del Apps Script para mostrar el inventario en vivo.");
+      els.note.hidden = true;
       useCatalog(fallback);
       return;
     }
