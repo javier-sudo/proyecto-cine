@@ -3,12 +3,20 @@
 
   const config = window.KIMUN_CONFIG || {};
   const fallback = window.KIMUN_FALLBACK || { categories: [] };
-  const state = { catalog: fallback, category: "Todos", query: "", cart: new Map() };
+  const state = { catalog: fallback, filter: "Todos", query: "", visible: 12, cart: new Map() };
   const $ = (selector) => document.querySelector(selector);
   const els = {
     grid: $("#productGrid"), tabs: $("#categoryTabs"), search: $("#searchInput"), summary: $("#catalogSummary"),
     note: $("#syncNote"), empty: $("#emptyState"), cart: $("#cart"), scrim: $("#scrim"), count: $("#cartCount"),
-    items: $("#cartItems"), cartEmpty: $("#cartEmpty"), total: $("#cartTotal"), send: $("#sendQuote"), template: $("#productTemplate")
+    items: $("#cartItems"), cartEmpty: $("#cartEmpty"), total: $("#cartTotal"), send: $("#sendQuote"), template: $("#productTemplate"),
+    loadMore: $("#loadMore"), results: $("#catalogResults")
+  };
+
+  const groupOrder = ["Limpieza", "Cintas", "Organización", "Energía", "Marcadores", "Embalaje", "Accesorios", "Utilidad"];
+  const imageGroups = {
+    "cleaning-kit": "Limpieza", "tapes-cinefoil": "Cintas", "organization-fasteners": "Organización",
+    "power-electrical": "Energía", "marking-tools": "Marcadores", "packaging-protection": "Embalaje",
+    "camera-accessories": "Accesorios", "set-utility": "Utilidad"
   };
 
   const money = new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 });
@@ -51,16 +59,32 @@
     );
   }
 
+  function productGroup(product) {
+    const image = key(product.image);
+    const imageMatch = Object.keys(imageGroups).find((name) => image.includes(name));
+    if (imageMatch) return imageGroups[imageMatch];
+    const text = key([product.name, product.brand, product.detail].join(" "));
+    if (/gaffer|masking|cinta|cine foil/.test(text)) return "Cintas";
+    if (/pila|bateria|zapatilla|triple/.test(text)) return "Energía";
+    if (/bolsa|ziploc|toalla|caja|alusa/.test(text)) return "Embalaje";
+    if (/velcro|amarra|elastico|rollo dual/.test(text)) return "Organización";
+    if (/plumon|tiza|brocha|gotita/.test(text)) return "Marcadores";
+    if (/ocular|quick release/.test(text)) return "Accesorios";
+    if (/wd 40|quitasol|despacho/.test(text)) return "Utilidad";
+    return "Limpieza";
+  }
+
   function renderTabs() {
-    const categories = ["Todos", ...(state.catalog.categories || []).map((category) => category.name)];
+    const available = new Set(allProducts().map(productGroup));
+    const categories = ["Todos", ...groupOrder.filter((group) => available.has(group))];
     els.tabs.replaceChildren(...categories.map((category) => {
       const button = document.createElement("button");
-      button.className = `category-tab${state.category === category ? " active" : ""}`;
+      button.className = `category-tab${state.filter === category ? " active" : ""}`;
       button.type = "button";
       button.role = "tab";
-      button.setAttribute("aria-selected", state.category === category ? "true" : "false");
+      button.setAttribute("aria-selected", state.filter === category ? "true" : "false");
       button.textContent = category;
-      button.addEventListener("click", () => { state.category = category; renderTabs(); renderProducts(); });
+      button.addEventListener("click", () => { state.filter = category; state.visible = 12; renderTabs(); renderProducts(); });
       return button;
     }));
   }
@@ -68,12 +92,17 @@
   function renderProducts() {
     const query = key(state.query);
     const products = allProducts().filter((product) => {
-      const inCategory = state.category === "Todos" || product.category === state.category;
+      const inCategory = state.filter === "Todos" || productGroup(product) === state.filter;
       const haystack = key([product.name, product.brand, product.detail, product.category].join(" "));
       return inCategory && (!query || haystack.includes(query));
     });
     els.empty.hidden = products.length > 0;
-    els.grid.replaceChildren(...products.map(productCard));
+    const visibleProducts = products.slice(0, state.visible);
+    els.grid.replaceChildren(...visibleProducts.map(productCard));
+    els.results.textContent = products.length ? `Mostrando ${visibleProducts.length} de ${products.length}` : "0 productos";
+    const remaining = Math.max(0, products.length - visibleProducts.length);
+    els.loadMore.hidden = remaining === 0;
+    els.loadMore.textContent = `Mostrar más (${remaining})`;
   }
 
   function productCard(product) {
@@ -84,7 +113,7 @@
     node.querySelector("h3").textContent = name;
     node.querySelector(".product-copy p").textContent = [product.brand, product.detail].filter(Boolean).join(" · ") || "Disponible por encargo";
     node.querySelector(".product-price").textContent = money.format(Number(product.price) || 0);
-    node.querySelector(".product-category").textContent = product.category;
+    node.querySelector(".product-category").textContent = productGroup(product);
     node.querySelector(".product-placeholder span").textContent = name.slice(0, 1).toUpperCase();
     node.querySelector(".product-placeholder small").textContent = product.category;
     if (product.image) {
@@ -175,7 +204,8 @@
   function closeCart() { document.body.classList.remove("cart-open"); els.scrim.hidden = true; els.cart.classList.remove("open"); els.cart.setAttribute("aria-hidden", "true"); }
   function openContact() { window.open(`https://wa.me/${clean(config.whatsapp)}?text=${encodeURIComponent("Hola, necesito ayuda con insumos para una producción audiovisual.")}`, "_blank", "noopener,noreferrer"); }
 
-  els.search.addEventListener("input", (event) => { state.query = event.target.value; renderProducts(); });
+  els.search.addEventListener("input", (event) => { state.query = event.target.value; state.visible = 12; renderProducts(); });
+  els.loadMore.addEventListener("click", () => { state.visible += 12; renderProducts(); });
   $("#openCart").addEventListener("click", openCart);
   $("#heroQuote").addEventListener("click", openCart);
   $("#closeCart").addEventListener("click", closeCart);
