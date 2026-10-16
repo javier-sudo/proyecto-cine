@@ -96,6 +96,10 @@ body.cart-open { overflow: hidden; }
 .empty-state { text-align: center; border: 1px dashed var(--line); padding: 60px 20px; color: var(--muted); }
 .empty-state strong, .empty-state span { display: block; }
 .empty-state strong { color: var(--ink); margin-bottom: 7px; }
+.catalog-more { display: flex; justify-content: space-between; align-items: center; gap: 18px; margin-top: 28px; min-height: 46px; }
+.catalog-more span { color: var(--muted); font-size: 12px; }
+.button.outline { border: 1px solid var(--ink); background: transparent; color: var(--ink); padding: 13px 22px; }
+.button.outline:hover { background: var(--ink); color: var(--paper); }
 
 .purchase-flow { background: var(--ink); color: var(--paper); display: grid; grid-template-columns: 45% 55%; padding: 110px 5vw; gap: 7vw; }
 .purchase-flow .eyebrow { color: var(--acid); }
