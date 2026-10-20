@@ -97,18 +97,18 @@
 
   const carousel = $("#heroCarousel");
   const slides = $$(".hero-slide");
-  const dots = $$(".carousel-dot");
   let activeSlide = 0;
   let carouselTimer;
+
+  for (let index = slides.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [slides[index], slides[randomIndex]] = [slides[randomIndex], slides[index]];
+  }
+  slides.forEach((slide) => carousel.appendChild(slide));
 
   function showSlide(index) {
     activeSlide = (index + slides.length) % slides.length;
     slides.forEach((slide, slideIndex) => slide.classList.toggle("active", slideIndex === activeSlide));
-    dots.forEach((dot, dotIndex) => {
-      const active = dotIndex === activeSlide;
-      dot.classList.toggle("active", active);
-      dot.setAttribute("aria-selected", active ? "true" : "false");
-    });
   }
 
   function startCarousel() {
@@ -116,13 +116,6 @@
     if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) carouselTimer = setInterval(() => showSlide(activeSlide + 1), 5000);
   }
 
-  $("#carouselPrev").addEventListener("click", () => { showSlide(activeSlide - 1); startCarousel(); });
-  $("#carouselNext").addEventListener("click", () => { showSlide(activeSlide + 1); startCarousel(); });
-  dots.forEach((dot, index) => dot.addEventListener("click", () => { showSlide(index); startCarousel(); }));
-  carousel.addEventListener("mouseenter", () => clearInterval(carouselTimer));
-  carousel.addEventListener("mouseleave", startCarousel);
-  carousel.addEventListener("focusin", () => clearInterval(carouselTimer));
-  carousel.addEventListener("focusout", startCarousel);
   $("#year").textContent = new Date().getFullYear();
-  startCarousel(); setMode("sale");
+  showSlide(0); startCarousel(); setMode("sale");
 })();
