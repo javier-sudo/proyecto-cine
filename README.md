@@ -1,6 +1,12 @@
 # KIMUN Cine
 
-Catálogo web de insumos para cine y producción audiovisual. La vitrina es estática y obtiene categorías y productos desde Google Sheets mediante una API de solo lectura en Apps Script.
+Catálogo web de venta de insumos y rental para cine y producción audiovisual. La versión publicada contiene 203 productos y 74 equipos, separados por área, con búsqueda, filtros y solicitud de cotización por WhatsApp.
+
+## Catálogo actual
+
+Los datos se generan desde las cinco planillas entregadas por KIMUN: cámara, iluminación, sonido, producción y rental. Para reconstruir `dist/catalog-data.js`, deja los archivos fuente en `.source/` con los nombres usados por `scripts/build_catalog.py` y ejecuta el script con Python y `openpyxl`.
+
+Por ahora las tarjetas no muestran fotografías de productos. El único recurso gráfico usado es el logo oficial de KIMUN.
 
 ## Estructura de las pestañas de catálogo
 
@@ -28,4 +34,4 @@ Las tiendas externas pueden bloquear la carga o cambiar sus URLs. Por eso, para 
 3. Copia la URL terminada en `/exec` dentro de `dist/config.js`.
 4. Cambia el número de WhatsApp en `dist/config.js` si corresponde.
 
-El sitio funciona con una muestra local mientras `apiUrl` esté vacío. Ninguna contraseña debe guardarse en los archivos públicos.
+El sitio usa `dist/catalog-data.js` mientras `apiUrl` esté vacío. Ninguna contraseña debe guardarse en los archivos públicos.
