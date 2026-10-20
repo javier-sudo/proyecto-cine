@@ -26,7 +26,7 @@
     state.query = "";
     state.visible = 16;
     els.search.value = "";
-    els.title.textContent = state.mode === "sale" ? "Productos para el set." : "Equipos listos para rodar.";
+    els.title.textContent = state.mode === "sale" ? "Insumos disponibles para venta." : "Equipos disponibles en rental.";
     els.search.placeholder = state.mode === "sale" ? "Buscar insumo, marca o detalle…" : "Buscar HMI, Fresnel, LED, grip…";
     $$(".mode-button").forEach((button) => {
       const active = button.dataset.mode === state.mode;
