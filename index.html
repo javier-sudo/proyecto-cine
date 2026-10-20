@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=7">
+  <link rel="stylesheet" href="styles.css?v=8">
 </head>
 <body>
   <header class="site-header">
@@ -27,7 +27,14 @@
         <div class="hero-actions"><a class="button primary" href="#catalogo" data-set-mode="sale">Ver productos</a><a class="button ghost" href="#catalogo" data-set-mode="rental">Ver rental</a></div>
         <div class="hero-meta"><span>277 artículos publicados</span><span>Cotización personalizada</span><span>Atención directa</span></div>
       </div>
-      <div class="hero-art" aria-hidden="true"><div class="film-strip"><span>CAM</span><span>LUZ</span><span>SON</span><span>PRO</span></div><div class="hero-number">24</div><p>INSUMOS · EQUIPOS · RENTAL</p></div>
+      <div class="hero-art">
+        <div class="hero-carousel" id="heroCarousel" aria-roledescription="carrusel" aria-label="Producción cinematográfica">
+          <figure class="hero-slide active"><img src="images/hero-rodaje.png" alt="Equipo profesional grabando una escena con cámara de cine" fetchpriority="high"><figcaption><span>01</span> Rodaje en movimiento</figcaption></figure>
+          <figure class="hero-slide"><img src="images/hero-iluminacion.png" alt="Técnicos preparando iluminación profesional en un set" loading="lazy"><figcaption><span>02</span> Iluminación de set</figcaption></figure>
+          <figure class="hero-slide"><img src="images/hero-accesorios.png" alt="Accesorios profesionales preparados para una producción" loading="lazy"><figcaption><span>03</span> Accesorios de producción</figcaption></figure>
+          <div class="carousel-controls"><button class="carousel-arrow" id="carouselPrev" type="button" aria-label="Imagen anterior">←</button><div class="carousel-dots" role="tablist" aria-label="Seleccionar imagen"><button class="carousel-dot active" type="button" role="tab" aria-selected="true" aria-label="Rodaje en movimiento"></button><button class="carousel-dot" type="button" role="tab" aria-selected="false" aria-label="Iluminación de set"></button><button class="carousel-dot" type="button" role="tab" aria-selected="false" aria-label="Accesorios de producción"></button></div><button class="carousel-arrow" id="carouselNext" type="button" aria-label="Imagen siguiente">→</button></div>
+        </div>
+      </div>
     </section>
 
     <section class="catalog-section" id="catalogo">
@@ -68,6 +75,6 @@
 
   <script src="config.js?v=4"></script>
   <script src="catalog-data.js?v=1"></script>
-  <script src="app.js?v=6"></script>
+  <script src="app.js?v=7"></script>
 </body>
 </html>
