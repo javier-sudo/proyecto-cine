@@ -2,135 +2,91 @@
   "use strict";
 
   const config = window.KIMUN_CONFIG || {};
-  const fallback = window.KIMUN_FALLBACK || { categories: [] };
-  const state = { catalog: fallback, filter: "Todos", query: "", visible: 12, cart: new Map() };
+  const catalog = window.KIMUN_CATALOG || { sale: { categories: [] }, rental: { categories: [] } };
+  const state = { mode: "sale", category: "Todos", query: "", visible: 16, cart: new Map() };
   const $ = (selector) => document.querySelector(selector);
+  const $$ = (selector) => [...document.querySelectorAll(selector)];
   const els = {
     grid: $("#productGrid"), tabs: $("#categoryTabs"), search: $("#searchInput"), summary: $("#catalogSummary"),
-    note: $("#syncNote"), empty: $("#emptyState"), cart: $("#cart"), scrim: $("#scrim"), count: $("#cartCount"),
-    items: $("#cartItems"), cartEmpty: $("#cartEmpty"), total: $("#cartTotal"), send: $("#sendQuote"), template: $("#productTemplate"),
-    loadMore: $("#loadMore"), results: $("#catalogResults")
-  };
-
-  const groupOrder = ["Limpieza", "Cintas", "Organización", "Energía", "Marcadores", "Embalaje", "Accesorios", "Utilidad"];
-  const imageGroups = {
-    "cleaning-kit": "Limpieza", "tapes-cinefoil": "Cintas", "organization-fasteners": "Organización",
-    "power-electrical": "Energía", "marking-tools": "Marcadores", "packaging-protection": "Embalaje",
-    "camera-accessories": "Accesorios", "set-utility": "Utilidad"
+    title: $("#catalogTitle"), empty: $("#emptyState"), cart: $("#cart"), scrim: $("#scrim"), count: $("#cartCount"),
+    items: $("#cartItems"), cartEmpty: $("#cartEmpty"), total: $("#cartTotal"), send: $("#sendQuote"),
+    template: $("#productTemplate"), loadMore: $("#loadMore"), results: $("#catalogResults")
   };
 
   const money = new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 });
   const clean = (value) => String(value ?? "").trim();
   const key = (value) => clean(value).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
-  async function loadCatalog() {
-    if (!config.apiUrl) {
-      els.note.hidden = true;
-      useCatalog(fallback);
-      return;
-    }
-    try {
-      const url = new URL(config.apiUrl);
-      url.searchParams.set("action", "catalog");
-      url.searchParams.set("_", Date.now().toString());
-      const response = await fetch(url, { method: "GET", redirect: "follow" });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const payload = await response.json();
-      if (!payload.success || !Array.isArray(payload.categories)) throw new Error(payload.message || "Respuesta no válida");
-      useCatalog(payload);
-    } catch (error) {
-      console.warn("No se pudo cargar el catálogo en vivo", error);
-      showNote("El catálogo en vivo no respondió. Se está mostrando una vista de respaldo.");
-      useCatalog(fallback);
-    }
-  }
+  function currentCatalog() { return catalog[state.mode] || { categories: [] }; }
+  function allProducts() { return currentCatalog().categories.flatMap((category) => category.products || []); }
 
-  function useCatalog(catalog) {
-    state.catalog = catalog;
-    const total = allProducts().length;
-    els.summary.textContent = `${total} ${total === 1 ? "producto" : "productos"} · ${catalog.categories.length} ${catalog.categories.length === 1 ? "categoría" : "categorías"}`;
+  function setMode(mode) {
+    state.mode = mode === "rental" ? "rental" : "sale";
+    state.category = "Todos";
+    state.query = "";
+    state.visible = 16;
+    els.search.value = "";
+    els.title.textContent = state.mode === "sale" ? "Productos para el set." : "Equipos listos para rodar.";
+    els.search.placeholder = state.mode === "sale" ? "Buscar insumo, marca o detalle…" : "Buscar HMI, Fresnel, LED, grip…";
+    $$(".mode-button").forEach((button) => {
+      const active = button.dataset.mode === state.mode;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-selected", active ? "true" : "false");
+    });
     renderTabs();
     renderProducts();
   }
 
-  function allProducts() {
-    return (state.catalog.categories || []).flatMap((category) =>
-      (category.products || []).map((product) => ({ ...product, category: category.name }))
-    );
-  }
-
-  function productGroup(product) {
-    const image = key(product.image);
-    const imageMatch = Object.keys(imageGroups).find((name) => image.includes(name));
-    if (imageMatch) return imageGroups[imageMatch];
-    const text = key([product.name, product.brand, product.detail].join(" "));
-    if (/gaffer|masking|cinta|cine foil/.test(text)) return "Cintas";
-    if (/pila|bateria|zapatilla|triple/.test(text)) return "Energía";
-    if (/bolsa|ziploc|toalla|caja|alusa/.test(text)) return "Embalaje";
-    if (/velcro|amarra|elastico|rollo dual/.test(text)) return "Organización";
-    if (/plumon|tiza|brocha|gotita/.test(text)) return "Marcadores";
-    if (/ocular|quick release/.test(text)) return "Accesorios";
-    if (/wd 40|quitasol|despacho/.test(text)) return "Utilidad";
-    return "Limpieza";
-  }
-
   function renderTabs() {
-    const available = new Set(allProducts().map(productGroup));
-    const categories = ["Todos", ...groupOrder.filter((group) => available.has(group))];
+    const categories = ["Todos", ...currentCatalog().categories.map((category) => category.name)];
     els.tabs.replaceChildren(...categories.map((category) => {
       const button = document.createElement("button");
-      button.className = `category-tab${state.filter === category ? " active" : ""}`;
+      button.className = `category-tab${state.category === category ? " active" : ""}`;
       button.type = "button";
       button.role = "tab";
-      button.setAttribute("aria-selected", state.filter === category ? "true" : "false");
+      button.setAttribute("aria-selected", state.category === category ? "true" : "false");
       button.textContent = category;
-      button.addEventListener("click", () => { state.filter = category; state.visible = 12; renderTabs(); renderProducts(); });
+      button.addEventListener("click", () => { state.category = category; state.visible = 16; renderTabs(); renderProducts(); });
       return button;
     }));
   }
 
-  function renderProducts() {
+  function filteredProducts() {
     const query = key(state.query);
-    const products = allProducts().filter((product) => {
-      const inCategory = state.filter === "Todos" || productGroup(product) === state.filter;
+    return allProducts().filter((product) => {
+      const inCategory = state.category === "Todos" || product.category === state.category;
       const haystack = key([product.name, product.brand, product.detail, product.category].join(" "));
       return inCategory && (!query || haystack.includes(query));
     });
+  }
+
+  function renderProducts() {
+    const products = filteredProducts();
+    const visible = products.slice(0, state.visible);
+    const totalMode = allProducts().length;
+    els.summary.textContent = `${totalMode} ${state.mode === "sale" ? "productos" : "equipos"} · ${currentCatalog().categories.length} áreas`;
     els.empty.hidden = products.length > 0;
-    const visibleProducts = products.slice(0, state.visible);
-    els.grid.replaceChildren(...visibleProducts.map(productCard));
-    els.results.textContent = products.length ? `Mostrando ${visibleProducts.length} de ${products.length}` : "0 productos";
-    const remaining = Math.max(0, products.length - visibleProducts.length);
+    els.grid.replaceChildren(...visible.map(productCard));
+    els.results.textContent = products.length ? `Mostrando ${visible.length} de ${products.length}` : "0 resultados";
+    const remaining = Math.max(0, products.length - visible.length);
     els.loadMore.hidden = remaining === 0;
     els.loadMore.textContent = `Mostrar más (${remaining})`;
   }
 
   function productCard(product) {
     const node = els.template.content.firstElementChild.cloneNode(true);
-    const media = node.querySelector(".product-media");
-    const image = node.querySelector("img");
-    const name = clean(product.name) || "Producto";
+    const name = clean(product.name) || "Artículo";
+    node.querySelector(".product-code").textContent = clean(product.id).toUpperCase();
+    node.querySelector(".product-category").textContent = `${product.mode} · ${product.category}`;
     node.querySelector("h3").textContent = name;
-    node.querySelector(".product-copy p").textContent = [product.brand, product.detail].filter(Boolean).join(" · ") || "Disponible por encargo";
-    node.querySelector(".product-price").textContent = money.format(Number(product.price) || 0);
-    node.querySelector(".product-category").textContent = productGroup(product);
-    node.querySelector(".product-placeholder span").textContent = name.slice(0, 1).toUpperCase();
-    node.querySelector(".product-placeholder small").textContent = product.category;
-    if (product.image) {
-      image.alt = name;
-      image.decoding = "async";
-      image.referrerPolicy = "no-referrer";
-      image.addEventListener("load", () => media.classList.add("has-image"));
-      image.addEventListener("error", () => {
-        media.classList.remove("has-image");
-        image.removeAttribute("src");
-      });
-      image.src = product.image;
-    }
+    const details = [product.brand, product.detail, product.availability ? `${product.availability} disponibles` : ""].filter(Boolean);
+    node.querySelector(".product-copy p").textContent = details.join(" · ") || "Disponibilidad a confirmar";
+    node.querySelector(".price-label").textContent = product.mode === "Rental" ? "Valor por jornada" : "Valor referencial";
+    node.querySelector(".product-price").textContent = product.price ? money.format(product.price) : "Consultar";
     const add = node.querySelector(".add-button");
-    const id = clean(product.id) || `${key(product.category)}-${key(name)}`;
-    if (state.cart.has(id)) { add.classList.add("added"); add.textContent = "✓"; }
-    add.addEventListener("click", () => addToCart({ ...product, id, category: product.category }, add));
+    if (state.cart.has(product.id)) { add.classList.add("added"); add.textContent = "✓"; }
+    add.setAttribute("aria-label", `Agregar ${name}`);
+    add.addEventListener("click", () => addToCart(product, add));
     return node;
   }
 
@@ -148,72 +104,42 @@
     els.cartEmpty.hidden = entries.length > 0;
     els.items.hidden = entries.length === 0;
     els.items.replaceChildren(...entries.map(({ product, quantity }) => {
-      const row = document.createElement("div");
-      row.className = "cart-row";
+      const row = document.createElement("div"); row.className = "cart-row";
       const copy = document.createElement("div");
-      const title = document.createElement("h3");
-      const meta = document.createElement("p");
-      title.textContent = product.name;
-      meta.textContent = `${money.format(Number(product.price) || 0)} c/u · ${product.category}`;
+      const title = document.createElement("h3"); title.textContent = product.name;
+      const meta = document.createElement("p"); meta.textContent = `${product.mode} · ${product.price ? money.format(product.price) : "Consultar"}`;
       copy.append(title, meta);
-      const qty = document.createElement("div");
-      qty.className = "qty";
-      const minus = qtyButton("−", () => changeQuantity(product.id, -1));
-      const value = document.createElement("span");
-      value.textContent = quantity;
-      const plus = qtyButton("+", () => changeQuantity(product.id, 1));
-      qty.append(minus, value, plus);
-      row.append(copy, qty);
-      return row;
+      const qty = document.createElement("div"); qty.className = "qty";
+      qty.append(qtyButton("−", () => changeQuantity(product.id, -1)), Object.assign(document.createElement("span"), { textContent: quantity }), qtyButton("+", () => changeQuantity(product.id, 1)));
+      row.append(copy, qty); return row;
     }));
     const units = entries.reduce((sum, item) => sum + item.quantity, 0);
     const total = entries.reduce((sum, item) => sum + (Number(item.product.price) || 0) * item.quantity, 0);
-    els.count.textContent = units;
-    els.total.textContent = money.format(total);
-    els.send.disabled = entries.length === 0;
+    els.count.textContent = units; els.total.textContent = money.format(total); els.send.disabled = !entries.length;
   }
 
-  function qtyButton(label, handler) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.textContent = label;
-    button.addEventListener("click", handler);
-    return button;
-  }
-
-  function changeQuantity(id, change) {
-    const entry = state.cart.get(id);
-    if (!entry) return;
-    entry.quantity += change;
-    if (entry.quantity <= 0) state.cart.delete(id);
-    renderCart();
-    renderProducts();
-  }
+  function qtyButton(label, handler) { const button = document.createElement("button"); button.type = "button"; button.textContent = label; button.addEventListener("click", handler); return button; }
+  function changeQuantity(id, change) { const entry = state.cart.get(id); if (!entry) return; entry.quantity += change; if (entry.quantity <= 0) state.cart.delete(id); renderCart(); renderProducts(); }
 
   function sendQuote() {
-    const entries = [...state.cart.values()];
-    if (!entries.length) return;
-    const lines = entries.map(({ product, quantity }) => `• ${quantity} × ${product.name} (${money.format(Number(product.price) || 0)} c/u)`);
+    const entries = [...state.cart.values()]; if (!entries.length) return;
+    const lines = entries.map(({ product, quantity }) => `• ${quantity} × ${product.name} — ${product.mode}${product.price ? ` (${money.format(product.price)}${product.mode === "Rental" ? " por jornada" : ""})` : " (consultar valor)"}`);
     const total = entries.reduce((sum, item) => sum + (Number(item.product.price) || 0) * item.quantity, 0);
-    const message = [`Hola ${config.businessName || "KIMUN"}, quisiera cotizar estos productos:`, "", ...lines, "", `Total referencial: ${money.format(total)}`, "", "¿Me confirman stock, IVA y despacho?"];
-    window.open(`https://wa.me/${clean(config.whatsapp)}?text=${encodeURIComponent(message.join("\n"))}`, "_blank", "noopener,noreferrer");
+    const message = [`Hola ${config.businessName || "KIMUN"}, quisiera cotizar:`, "", ...lines, "", `Total referencial conocido: ${money.format(total)}`, "", "¿Me confirman disponibilidad, IVA y condiciones?"].join("\n");
+    window.open(`https://wa.me/${clean(config.whatsapp)}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
   }
 
-  function showNote(message) { els.note.textContent = message; els.note.hidden = false; }
   function openCart() { document.body.classList.add("cart-open"); els.scrim.hidden = false; els.cart.classList.add("open"); els.cart.setAttribute("aria-hidden", "false"); }
   function closeCart() { document.body.classList.remove("cart-open"); els.scrim.hidden = true; els.cart.classList.remove("open"); els.cart.setAttribute("aria-hidden", "true"); }
-  function openContact() { window.open(`https://wa.me/${clean(config.whatsapp)}?text=${encodeURIComponent("Hola, necesito ayuda con insumos para una producción audiovisual.")}`, "_blank", "noopener,noreferrer"); }
+  function openContact() { window.open(`https://wa.me/${clean(config.whatsapp)}?text=${encodeURIComponent("Hola KIMUN, necesito cotizar para una producción audiovisual.")}`, "_blank", "noopener,noreferrer"); }
 
-  els.search.addEventListener("input", (event) => { state.query = event.target.value; state.visible = 12; renderProducts(); });
-  els.loadMore.addEventListener("click", () => { state.visible += 12; renderProducts(); });
-  $("#openCart").addEventListener("click", openCart);
-  $("#heroQuote").addEventListener("click", openCart);
-  $("#closeCart").addEventListener("click", closeCart);
-  els.scrim.addEventListener("click", closeCart);
-  els.send.addEventListener("click", sendQuote);
-  $("#contactButton").addEventListener("click", openContact);
+  $$(".mode-button").forEach((button) => button.addEventListener("click", () => setMode(button.dataset.mode)));
+  $$('[data-set-mode]').forEach((link) => link.addEventListener("click", () => setMode(link.dataset.setMode)));
+  els.search.addEventListener("input", (event) => { state.query = event.target.value; state.visible = 16; renderProducts(); });
+  els.loadMore.addEventListener("click", () => { state.visible += 16; renderProducts(); });
+  $("#openCart").addEventListener("click", openCart); $("#closeCart").addEventListener("click", closeCart); els.scrim.addEventListener("click", closeCart);
+  els.send.addEventListener("click", sendQuote); $("#contactButton").addEventListener("click", openContact);
   document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeCart(); });
   $("#year").textContent = new Date().getFullYear();
-  renderCart();
-  loadCatalog();
+  renderCart(); setMode("sale");
 })();
