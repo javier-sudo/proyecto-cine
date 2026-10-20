@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=9">
+  <link rel="stylesheet" href="styles.css?v=10">
 </head>
 <body>
   <header class="site-header">
@@ -46,7 +46,7 @@
         <button class="mode-button" type="button" role="tab" data-mode="rental" aria-selected="false"><span>02</span> Rental de equipos</button>
       </div>
       <div class="catalog-tools">
-        <label class="search-box"><span aria-hidden="true">⌕</span><input id="searchInput" type="search" placeholder="Buscar por nombre, marca o detalle…" autocomplete="off"></label>
+        <label class="search-box" for="searchInput"><span class="search-icon" aria-hidden="true">⌕</span><span class="search-content"><span class="search-label">Buscar en catálogo</span><input id="searchInput" type="search" placeholder="Nombre, marca o detalle…" aria-label="Buscar productos o equipos" autocomplete="off"></span></label>
         <div class="category-tabs" id="categoryTabs" role="tablist" aria-label="Áreas"></div>
       </div>
       <div class="product-grid" id="productGrid" aria-live="polite"></div>
