@@ -3,18 +3,18 @@
 
   const config = window.KIMUN_CONFIG || {};
   const catalog = window.KIMUN_CATALOG || { sale: { categories: [] }, rental: { categories: [] } };
-  const state = { mode: "sale", category: "Todos", query: "", visible: 16, cart: new Map() };
+  const state = { mode: "sale", category: "Todos", query: "", visible: 16 };
   const $ = (selector) => document.querySelector(selector);
   const $$ = (selector) => [...document.querySelectorAll(selector)];
   const els = {
     grid: $("#productGrid"), tabs: $("#categoryTabs"), search: $("#searchInput"), summary: $("#catalogSummary"),
-    title: $("#catalogTitle"), empty: $("#emptyState"), cart: $("#cart"), scrim: $("#scrim"), count: $("#cartCount"),
-    items: $("#cartItems"), cartEmpty: $("#cartEmpty"), send: $("#sendQuote"),
+    title: $("#catalogTitle"), empty: $("#emptyState"),
     template: $("#productTemplate"), loadMore: $("#loadMore"), results: $("#catalogResults")
   };
 
   const clean = (value) => String(value ?? "").trim();
   const key = (value) => clean(value).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const whatsappUrl = (message) => `https://wa.me/${clean(config.whatsapp)}?text=${encodeURIComponent(message)}`;
 
   function currentCatalog() { return catalog[state.mode] || { categories: [] }; }
   function allProducts() { return currentCatalog().categories.flatMap((category) => category.products || []); }
@@ -80,61 +80,20 @@
     node.querySelector("h3").textContent = name;
     const details = [product.brand, product.detail, product.availability ? `${product.availability} disponibles` : ""].filter(Boolean);
     node.querySelector(".product-copy p").textContent = details.join(" · ") || "Disponibilidad a confirmar";
-    const add = node.querySelector(".add-button");
-    if (state.cart.has(product.id)) { add.classList.add("added"); add.textContent = "✓"; }
-    add.setAttribute("aria-label", `Agregar ${name}`);
-    add.addEventListener("click", () => addToCart(product, add));
+    const whatsapp = node.querySelector(".whatsapp-button");
+    const message = `Hola ${config.businessName || "KIMUN"}, me interesa ${name} (${product.mode} · ${product.category}). ¿Me confirman disponibilidad y condiciones?`;
+    whatsapp.href = whatsappUrl(message);
+    whatsapp.setAttribute("aria-label", `Consultar por ${name} en WhatsApp`);
     return node;
   }
-
-  function addToCart(product, button) {
-    const current = state.cart.get(product.id);
-    state.cart.set(product.id, { product, quantity: (current?.quantity || 0) + 1 });
-    button.classList.add("added");
-    button.textContent = "✓";
-    renderCart();
-    openCart();
-  }
-
-  function renderCart() {
-    const entries = [...state.cart.values()];
-    els.cartEmpty.hidden = entries.length > 0;
-    els.items.hidden = entries.length === 0;
-    els.items.replaceChildren(...entries.map(({ product, quantity }) => {
-      const row = document.createElement("div"); row.className = "cart-row";
-      const copy = document.createElement("div");
-      const title = document.createElement("h3"); title.textContent = product.name;
-      const meta = document.createElement("p"); meta.textContent = `${product.mode} · ${product.category}`;
-      copy.append(title, meta);
-      const qty = document.createElement("div"); qty.className = "qty";
-      qty.append(qtyButton("−", () => changeQuantity(product.id, -1)), Object.assign(document.createElement("span"), { textContent: quantity }), qtyButton("+", () => changeQuantity(product.id, 1)));
-      row.append(copy, qty); return row;
-    }));
-    const units = entries.reduce((sum, item) => sum + item.quantity, 0);
-    els.count.textContent = units; els.send.disabled = !entries.length;
-  }
-
-  function qtyButton(label, handler) { const button = document.createElement("button"); button.type = "button"; button.textContent = label; button.addEventListener("click", handler); return button; }
-  function changeQuantity(id, change) { const entry = state.cart.get(id); if (!entry) return; entry.quantity += change; if (entry.quantity <= 0) state.cart.delete(id); renderCart(); renderProducts(); }
-
-  function sendQuote() {
-    const entries = [...state.cart.values()]; if (!entries.length) return;
-    const lines = entries.map(({ product, quantity }) => `• ${quantity} × ${product.name} — ${product.mode}`);
-    const message = [`Hola ${config.businessName || "KIMUN"}, quisiera cotizar:`, "", ...lines, "", "¿Me confirman disponibilidad y condiciones?"].join("\n");
-    window.open(`https://wa.me/${clean(config.whatsapp)}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
-  }
-
-  function openCart() { document.body.classList.add("cart-open"); els.scrim.hidden = false; els.cart.classList.add("open"); els.cart.setAttribute("aria-hidden", "false"); }
-  function closeCart() { document.body.classList.remove("cart-open"); els.scrim.hidden = true; els.cart.classList.remove("open"); els.cart.setAttribute("aria-hidden", "true"); }
-  function openContact() { window.open(`https://wa.me/${clean(config.whatsapp)}?text=${encodeURIComponent("Hola KIMUN, necesito cotizar para una producción audiovisual.")}`, "_blank", "noopener,noreferrer"); }
 
   $$(".mode-button").forEach((button) => button.addEventListener("click", () => setMode(button.dataset.mode)));
   $$('[data-set-mode]').forEach((link) => link.addEventListener("click", () => setMode(link.dataset.setMode)));
   els.search.addEventListener("input", (event) => { state.query = event.target.value; state.visible = 16; renderProducts(); });
   els.loadMore.addEventListener("click", () => { state.visible += 16; renderProducts(); });
-  $("#openCart").addEventListener("click", openCart); $("#closeCart").addEventListener("click", closeCart); els.scrim.addEventListener("click", closeCart);
-  els.send.addEventListener("click", sendQuote); $("#contactButton").addEventListener("click", openContact);
-  document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeCart(); });
+  const generalMessage = "Hola KIMUN, necesito información para una producción audiovisual.";
+  $("#headerWhatsapp").href = whatsappUrl(generalMessage);
+  $("#contactButton").href = whatsappUrl(generalMessage);
   $("#year").textContent = new Date().getFullYear();
-  renderCart(); setMode("sale");
+  setMode("sale");
 })();

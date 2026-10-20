@@ -9,13 +9,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=5">
+  <link rel="stylesheet" href="styles.css?v=6">
 </head>
 <body>
   <header class="site-header">
     <a class="brand" href="#inicio" aria-label="KIMUN, inicio"><span class="logo-crop"><img src="images/kimun-logo-alt.jpg" alt="KIMUN Evolución Técnica"></span></a>
     <nav aria-label="Navegación principal"><a href="#catalogo" data-set-mode="sale">Venta de insumos</a><a href="#catalogo" data-set-mode="rental">Rental de equipos</a><a href="#nosotros">Nosotros</a><a href="#contacto">Contacto</a></nav>
-    <button class="quote-button" id="openCart" type="button">Cotización <span id="cartCount">0</span></button>
+    <a class="quote-button" id="headerWhatsapp" target="_blank" rel="noopener noreferrer">WhatsApp</a>
   </header>
 
   <main>
@@ -52,30 +52,22 @@
 
     <section class="purchase-flow">
       <div><p class="eyebrow">Cómo funciona</p><h2>Del catálogo al set.</h2></div>
-      <ol class="steps"><li><span>01</span><div><strong>Selecciona</strong><p>Elige productos o equipos y define las cantidades.</p></div></li><li><span>02</span><div><strong>Envía</strong><p>Tu solicitud se arma automáticamente para WhatsApp.</p></div></li><li><span>03</span><div><strong>Coordina</strong><p>Confirmamos stock, jornadas, IVA, retiro o despacho.</p></div></li></ol>
+      <ol class="steps"><li><span>01</span><div><strong>Encuentra</strong><p>Busca el producto o equipo que necesita tu producción.</p></div></li><li><span>02</span><div><strong>Consulta</strong><p>Abre WhatsApp desde el artículo con el mensaje ya preparado.</p></div></li><li><span>03</span><div><strong>Coordina</strong><p>Confirmamos stock, jornadas, IVA, retiro o despacho.</p></div></li></ol>
     </section>
 
     <section class="contact-section" id="contacto">
       <p class="eyebrow">Contacto directo</p><h2>Cuéntanos qué necesita tu producción.</h2>
-      <div class="contact-actions"><button class="button light" id="contactButton" type="button">Hablar por WhatsApp</button><a class="button dark" href="https://www.instagram.com/kimun.spa/" target="_blank" rel="noopener noreferrer">Instagram @kimun.spa</a></div>
+      <div class="contact-actions"><a class="button light" id="contactButton" target="_blank" rel="noopener noreferrer">Hablar por WhatsApp</a><a class="button dark" href="https://www.instagram.com/kimun.spa/" target="_blank" rel="noopener noreferrer">Instagram @kimun.spa</a></div>
       <p class="contact-meta">kimuntecnica@gmail.com · +56 9 8614 3488 · +56 9 9306 9261</p>
     </section>
   </main>
 
   <footer><a class="brand" href="#inicio"><span class="logo-crop"><img src="images/kimun-logo-alt.jpg" alt="KIMUN"></span></a><p>Venta y rental para cine.</p><p>© <span id="year"></span> KIMUN SpA</p></footer>
 
-  <div class="scrim" id="scrim" hidden></div>
-  <aside class="cart" id="cart" aria-hidden="true" aria-labelledby="cartTitle">
-    <div class="cart-header"><div><p class="eyebrow">Tu selección</p><h2 id="cartTitle">Solicitar cotización</h2></div><button class="icon-button" id="closeCart" type="button" aria-label="Cerrar">×</button></div>
-    <div class="cart-items" id="cartItems"></div>
-    <div class="cart-empty" id="cartEmpty"><span class="empty-reel">○</span><strong>Tu lista está vacía</strong><p>Agrega productos o equipos desde el catálogo.</p></div>
-    <div class="cart-footer"><p>La disponibilidad, el IVA, el despacho y las jornadas se confirman directamente con KIMUN.</p><button class="button primary full" id="sendQuote" type="button" disabled>Enviar por WhatsApp</button></div>
-  </aside>
-
-  <template id="productTemplate"><article class="product-card"><div class="card-top"><span class="product-code"></span><span class="product-category"></span></div><div class="product-copy"><h3></h3><p></p></div><div class="product-bottom"><span class="quote-label">Agregar a cotización</span><button type="button" class="add-button" aria-label="Agregar">+</button></div></article></template>
+  <template id="productTemplate"><article class="product-card"><div class="card-top"><span class="product-code"></span><span class="product-category"></span></div><div class="product-copy"><h3></h3><p></p></div><div class="product-bottom"><a class="whatsapp-button" target="_blank" rel="noopener noreferrer">Consultar por WhatsApp <span aria-hidden="true">↗</span></a></div></article></template>
 
   <script src="config.js?v=4"></script>
   <script src="catalog-data.js?v=1"></script>
-  <script src="app.js?v=5"></script>
+  <script src="app.js?v=6"></script>
 </body>
 </html>
