@@ -25,7 +25,7 @@
         <h1>Todo para que el rodaje <em>siga.</em></h1>
         <p class="hero-lead">Venta de insumos y arriendo de iluminación y grip para cámara, sonido y producción audiovisual.</p>
         <div class="hero-actions"><a class="button primary" href="#catalogo" data-set-mode="sale">Ver productos</a><a class="button ghost" href="#catalogo" data-set-mode="rental">Ver rental</a></div>
-        <div class="hero-meta"><span>277 artículos publicados</span><span>Precios en CLP</span><span>Atención directa</span></div>
+        <div class="hero-meta"><span>277 artículos publicados</span><span>Cotización personalizada</span><span>Atención directa</span></div>
       </div>
       <div class="hero-art" aria-hidden="true"><div class="film-strip"><span>CAM</span><span>LUZ</span><span>SON</span><span>PRO</span></div><div class="hero-number">24</div><p>INSUMOS · EQUIPOS · RENTAL</p></div>
     </section>
@@ -69,10 +69,10 @@
     <div class="cart-header"><div><p class="eyebrow">Tu selección</p><h2 id="cartTitle">Solicitar cotización</h2></div><button class="icon-button" id="closeCart" type="button" aria-label="Cerrar">×</button></div>
     <div class="cart-items" id="cartItems"></div>
     <div class="cart-empty" id="cartEmpty"><span class="empty-reel">○</span><strong>Tu lista está vacía</strong><p>Agrega productos o equipos desde el catálogo.</p></div>
-    <div class="cart-footer"><div class="cart-total"><span>Total referencial</span><strong id="cartTotal">$0</strong></div><p>Los artículos sin precio, el IVA, el despacho y las jornadas se confirman en la cotización.</p><button class="button primary full" id="sendQuote" type="button" disabled>Enviar por WhatsApp</button></div>
+    <div class="cart-footer"><p>La disponibilidad, el IVA, el despacho y las jornadas se confirman directamente con KIMUN.</p><button class="button primary full" id="sendQuote" type="button" disabled>Enviar por WhatsApp</button></div>
   </aside>
 
-  <template id="productTemplate"><article class="product-card"><div class="card-top"><span class="product-code"></span><span class="product-category"></span></div><div class="product-copy"><h3></h3><p></p></div><div class="product-bottom"><div><small class="price-label"></small><strong class="product-price"></strong></div><button type="button" class="add-button" aria-label="Agregar">+</button></div></article></template>
+  <template id="productTemplate"><article class="product-card"><div class="card-top"><span class="product-code"></span><span class="product-category"></span></div><div class="product-copy"><h3></h3><p></p></div><div class="product-bottom"><span class="quote-label">Agregar a cotización</span><button type="button" class="add-button" aria-label="Agregar">+</button></div></article></template>
 
   <script src="config.js?v=4"></script>
   <script src="catalog-data.js?v=1"></script>
