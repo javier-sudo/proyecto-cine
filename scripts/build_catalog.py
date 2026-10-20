@@ -33,12 +33,6 @@ def clean(value):
     return re.sub(r"\s+", " ", text).strip()
 
 
-def price(value):
-    if isinstance(value, (int, float)) and value > 0:
-        return int(value)
-    return None
-
-
 def sales_category(filename, label, prefix):
     sheet = load_workbook(SOURCE / filename, data_only=True).active
     products = []
@@ -52,7 +46,6 @@ def sales_category(filename, label, prefix):
         products.append({
             "id": f"{prefix}-{len(products) + 1:03d}",
             "name": name,
-            "price": price(sheet.cell(row, 3).value),
             "brand": clean(sheet.cell(row, 4).value),
             "detail": clean(sheet.cell(row, 5).value),
             "mode": "Venta",
@@ -80,7 +73,6 @@ def rental_categories():
         current.append({
             "id": f"ren-{section[:3].lower()}-{len(current) + 1:03d}",
             "name": name,
-            "price": price(sheet.cell(row, 3).value),
             "brand": clean(sheet.cell(row, 4).value),
             "detail": "",
             "availability": clean(sheet.cell(row, 6).value),

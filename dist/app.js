@@ -9,11 +9,10 @@
   const els = {
     grid: $("#productGrid"), tabs: $("#categoryTabs"), search: $("#searchInput"), summary: $("#catalogSummary"),
     title: $("#catalogTitle"), empty: $("#emptyState"), cart: $("#cart"), scrim: $("#scrim"), count: $("#cartCount"),
-    items: $("#cartItems"), cartEmpty: $("#cartEmpty"), total: $("#cartTotal"), send: $("#sendQuote"),
+    items: $("#cartItems"), cartEmpty: $("#cartEmpty"), send: $("#sendQuote"),
     template: $("#productTemplate"), loadMore: $("#loadMore"), results: $("#catalogResults")
   };
 
-  const money = new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 });
   const clean = (value) => String(value ?? "").trim();
   const key = (value) => clean(value).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
@@ -81,8 +80,6 @@
     node.querySelector("h3").textContent = name;
     const details = [product.brand, product.detail, product.availability ? `${product.availability} disponibles` : ""].filter(Boolean);
     node.querySelector(".product-copy p").textContent = details.join(" · ") || "Disponibilidad a confirmar";
-    node.querySelector(".price-label").textContent = product.mode === "Rental" ? "Valor por jornada" : "Valor referencial";
-    node.querySelector(".product-price").textContent = product.price ? money.format(product.price) : "Consultar";
     const add = node.querySelector(".add-button");
     if (state.cart.has(product.id)) { add.classList.add("added"); add.textContent = "✓"; }
     add.setAttribute("aria-label", `Agregar ${name}`);
@@ -107,15 +104,14 @@
       const row = document.createElement("div"); row.className = "cart-row";
       const copy = document.createElement("div");
       const title = document.createElement("h3"); title.textContent = product.name;
-      const meta = document.createElement("p"); meta.textContent = `${product.mode} · ${product.price ? money.format(product.price) : "Consultar"}`;
+      const meta = document.createElement("p"); meta.textContent = `${product.mode} · ${product.category}`;
       copy.append(title, meta);
       const qty = document.createElement("div"); qty.className = "qty";
       qty.append(qtyButton("−", () => changeQuantity(product.id, -1)), Object.assign(document.createElement("span"), { textContent: quantity }), qtyButton("+", () => changeQuantity(product.id, 1)));
       row.append(copy, qty); return row;
     }));
     const units = entries.reduce((sum, item) => sum + item.quantity, 0);
-    const total = entries.reduce((sum, item) => sum + (Number(item.product.price) || 0) * item.quantity, 0);
-    els.count.textContent = units; els.total.textContent = money.format(total); els.send.disabled = !entries.length;
+    els.count.textContent = units; els.send.disabled = !entries.length;
   }
 
   function qtyButton(label, handler) { const button = document.createElement("button"); button.type = "button"; button.textContent = label; button.addEventListener("click", handler); return button; }
@@ -123,9 +119,8 @@
 
   function sendQuote() {
     const entries = [...state.cart.values()]; if (!entries.length) return;
-    const lines = entries.map(({ product, quantity }) => `• ${quantity} × ${product.name} — ${product.mode}${product.price ? ` (${money.format(product.price)}${product.mode === "Rental" ? " por jornada" : ""})` : " (consultar valor)"}`);
-    const total = entries.reduce((sum, item) => sum + (Number(item.product.price) || 0) * item.quantity, 0);
-    const message = [`Hola ${config.businessName || "KIMUN"}, quisiera cotizar:`, "", ...lines, "", `Total referencial conocido: ${money.format(total)}`, "", "¿Me confirman disponibilidad, IVA y condiciones?"].join("\n");
+    const lines = entries.map(({ product, quantity }) => `• ${quantity} × ${product.name} — ${product.mode}`);
+    const message = [`Hola ${config.businessName || "KIMUN"}, quisiera cotizar:`, "", ...lines, "", "¿Me confirman disponibilidad y condiciones?"].join("\n");
     window.open(`https://wa.me/${clean(config.whatsapp)}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
   }
 
