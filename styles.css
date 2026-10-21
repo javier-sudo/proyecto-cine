@@ -20,7 +20,6 @@ body{background:var(--paper);color:var(--ink)}
 .quote-button:hover{background:var(--red);border-color:var(--red);color:#fff}
 .hero{background:var(--paper)}
 .hero-copy{position:relative;isolation:isolate}
-.hero-copy:after{content:"";position:absolute;right:6%;top:11%;width:clamp(70px,8vw,132px);aspect-ratio:1;background:var(--red);z-index:-1}
 .hero h1{color:#fff}
 .hero h1 em{color:var(--red)}
 .hero-lead{color:#c9c3bc}
@@ -55,4 +54,3 @@ body{background:var(--paper);color:var(--ink)}
 .button.light:hover{background:#fff;border-color:#fff;color:#111113}
 .button.dark{background:#fff;border-color:#fff;color:#111113}
 footer{background:#09090a;color:var(--muted);border-top:1px solid var(--line)}
-@media(max-width:780px){.hero-copy:after{right:18px;top:52px;width:72px}}
