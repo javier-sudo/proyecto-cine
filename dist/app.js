@@ -124,7 +124,7 @@
 
   function startCarousel() {
     clearInterval(carouselTimer);
-    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) carouselTimer = setInterval(() => showSlide(activeSlide + 1), 5000);
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) carouselTimer = setInterval(() => showSlide(activeSlide + 1), 3000);
   }
 
   $("#year").textContent = new Date().getFullYear();
