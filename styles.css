@@ -40,7 +40,6 @@ body{background:var(--paper);color:var(--ink)}
 .category-tab{color:var(--ink);border-color:rgba(255,255,255,.25)}
 .category-tab:hover{border-color:var(--red)}
 .product-card,.product-card:nth-child(4n+2){position:relative;background:#151517;border-color:rgba(255,255,255,.18);overflow:hidden}
-.product-card:before{content:"";position:absolute;right:0;top:0;width:11px;height:11px;background:var(--red)}
 .product-card:hover{border-color:var(--red);box-shadow:0 18px 42px rgba(0,0,0,.42)}
 .whatsapp-button{border-color:rgba(255,255,255,.58)}
 .empty-state strong{color:#fff}
