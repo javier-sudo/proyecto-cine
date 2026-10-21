@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=16">
+  <link rel="stylesheet" href="styles.css?v=17">
 </head>
 <body>
   <header class="site-header">
@@ -42,11 +42,12 @@
     <section class="catalog-section" id="catalogo">
       <div class="section-heading"><div><p class="eyebrow">Catálogo KIMUN</p><h2 id="catalogTitle">Productos para el set.</h2></div><p id="catalogSummary">Cargando catálogo…</p></div>
       <div class="mode-switch" role="tablist" aria-label="Tipo de catálogo">
-        <button class="mode-button active" type="button" role="tab" data-mode="sale" aria-selected="true"><span>01</span> Venta de insumos</button>
+        <button class="mode-button active" type="button" role="tab" data-mode="all" aria-selected="true"><span>00</span> Todo el catálogo</button>
+        <button class="mode-button" type="button" role="tab" data-mode="sale" aria-selected="false"><span>01</span> Venta de insumos</button>
         <button class="mode-button" type="button" role="tab" data-mode="rental" aria-selected="false"><span>02</span> Rental de equipos</button>
       </div>
       <div class="catalog-tools">
-        <label class="search-box" for="searchInput"><span class="search-icon" aria-hidden="true">⌕</span><span class="search-content"><span class="search-label">Buscar en catálogo</span><input id="searchInput" type="search" placeholder="Nombre, marca o detalle…" aria-label="Buscar productos o equipos" autocomplete="off"></span></label>
+        <label class="search-box" for="searchInput"><span class="search-icon" aria-hidden="true">⌕</span><span class="search-content"><span class="search-label">Buscar en venta y rental</span><input id="searchInput" type="search" placeholder="Producto, equipo, marca o detalle…" aria-label="Buscar en venta y rental" autocomplete="off"></span></label>
         <div class="category-tabs" id="categoryTabs" role="tablist" aria-label="Áreas"></div>
       </div>
       <div class="product-grid" id="productGrid" aria-live="polite"></div>
@@ -77,6 +78,6 @@
 
   <script src="config.js?v=4"></script>
   <script src="catalog-data.js?v=1"></script>
-  <script src="app.js?v=8"></script>
+  <script src="app.js?v=9"></script>
 </body>
 </html>

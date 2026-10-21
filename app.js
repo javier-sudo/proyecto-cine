@@ -3,7 +3,7 @@
 
   const config = window.KIMUN_CONFIG || {};
   const catalog = window.KIMUN_CATALOG || { sale: { categories: [] }, rental: { categories: [] } };
-  const state = { mode: "sale", category: "Todos", query: "", visible: 16 };
+  const state = { mode: "all", category: "Todos", query: "", visible: 16 };
   const $ = (selector) => document.querySelector(selector);
   const $$ = (selector) => [...document.querySelectorAll(selector)];
   const els = {
@@ -16,17 +16,27 @@
   const key = (value) => clean(value).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
   const whatsappUrl = (message) => `https://wa.me/${clean(config.whatsapp)}?text=${encodeURIComponent(message)}`;
 
-  function currentCatalog() { return catalog[state.mode] || { categories: [] }; }
-  function allProducts() { return currentCatalog().categories.flatMap((category) => category.products || []); }
+  function modeCatalogs() {
+    return state.mode === "all" ? [catalog.sale, catalog.rental] : [catalog[state.mode]];
+  }
+
+  function allProducts() {
+    return modeCatalogs().filter(Boolean).flatMap((entry) => (entry.categories || []).flatMap((category) => category.products || []));
+  }
+
+  function availableCategories() {
+    return [...new Set(allProducts().map((product) => product.category).filter(Boolean))];
+  }
 
   function setMode(mode) {
-    state.mode = mode === "rental" ? "rental" : "sale";
+    state.mode = ["sale", "rental"].includes(mode) ? mode : "all";
     state.category = "Todos";
-    state.query = "";
     state.visible = 16;
-    els.search.value = "";
-    els.title.textContent = state.mode === "sale" ? "Insumos disponibles para venta." : "Equipos disponibles en rental.";
-    els.search.placeholder = state.mode === "sale" ? "Buscar insumo, marca o detalle…" : "Buscar HMI, Fresnel, LED, grip…";
+    els.title.textContent = state.mode === "sale"
+      ? "Insumos disponibles para venta."
+      : state.mode === "rental"
+        ? "Equipos disponibles en rental."
+        : "Venta y rental para tu producción.";
     $$(".mode-button").forEach((button) => {
       const active = button.dataset.mode === state.mode;
       button.classList.toggle("active", active);
@@ -37,7 +47,7 @@
   }
 
   function renderTabs() {
-    const categories = ["Todos", ...currentCatalog().categories.map((category) => category.name)];
+    const categories = ["Todos", ...availableCategories()];
     els.tabs.replaceChildren(...categories.map((category) => {
       const button = document.createElement("button");
       button.className = `category-tab${state.category === category ? " active" : ""}`;
@@ -54,7 +64,7 @@
     const query = key(state.query);
     return allProducts().filter((product) => {
       const inCategory = state.category === "Todos" || product.category === state.category;
-      const haystack = key([product.name, product.brand, product.detail, product.category].join(" "));
+      const haystack = key([product.name, product.brand, product.detail, product.category, product.mode].join(" "));
       return inCategory && (!query || haystack.includes(query));
     });
   }
@@ -63,7 +73,8 @@
     const products = filteredProducts();
     const visible = products.slice(0, state.visible);
     const totalMode = allProducts().length;
-    els.summary.textContent = `${totalMode} ${state.mode === "sale" ? "productos" : "equipos"} · ${currentCatalog().categories.length} áreas`;
+    const modeLabel = state.mode === "sale" ? "productos" : state.mode === "rental" ? "equipos" : "artículos";
+    els.summary.textContent = `${totalMode} ${modeLabel} · ${availableCategories().length} áreas`;
     els.empty.hidden = products.length > 0;
     els.grid.replaceChildren(...visible.map(productCard));
     els.results.textContent = products.length ? `Mostrando ${visible.length} de ${products.length}` : "0 resultados";
@@ -117,5 +128,5 @@
   }
 
   $("#year").textContent = new Date().getFullYear();
-  showSlide(0); startCarousel(); setMode("sale");
+  showSlide(0); startCarousel(); setMode("all");
 })();
