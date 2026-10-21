@@ -1,134 +1,130 @@
 /**
- * API pública de solo lectura para el catálogo KIMUN.
- * Cada pestaña válida de la hoja se convierte en una categoría.
- * Solo se publican pestañas que contienen una columna de producto y una de precio.
+ * API pública de solo lectura para KIMUN.
+ * Lee los cinco Excel originales de la carpeta compartida en cada consulta.
  */
-const SPREADSHEET_ID = '1BGj5Y0sPrw-6lbCzhuuXkTIg5Kz2EdyafjKwJQbw3oo';
-const DRIVE_FOLDER_ID = '142IxQzU1sLMcDswBiU9MMkXRrTOalfzf';
-const CACHE_SECONDS = 300;
-const EXCLUDED_SHEETS = ['configuracion', 'usuarios', 'clases', 'entrega_proyectos', 'proyectos', 'logs'];
+const DRIVE_FILES = {
+  camera: '1jHuMsA9IgwHRnoDAYgFhrKZOjRa7Q45R',
+  light: '1_vsaDRDfVurHqjusgp0WVVFY6wDkvbkK',
+  sound: '1pcF7BJXhNt_YbHf3V6J0ZpedgJ6h2Tc1',
+  production: '1e_R-xXwkURkzvUkh72bdecb5Q2sc7oM2',
+  rental: '1RnUWQZCdlnu7U0Sy5o7-Kb7u34azfsnZ'
+};
 
 function doGet(e) {
+  const callback = String((e && e.parameter && e.parameter.callback) || '');
   try {
-    const action = String((e && e.parameter && e.parameter.action) || 'catalog').toLowerCase();
-    if (action === 'health') return json_({ success: true, service: 'kimun-catalog', timestamp: new Date().toISOString() });
-    if (action !== 'catalog') return json_({ success: false, message: 'Acción no disponible.' });
-    return json_(getCatalog_());
+    return output_({ success: true, updatedAt: new Date().toISOString(), catalog: buildCatalog_() }, callback);
   } catch (error) {
     console.error(error);
-    return json_({ success: false, message: 'No fue posible cargar el catálogo.' });
+    return output_({ success: false, message: 'No fue posible leer el catálogo desde Drive.' }, callback);
   }
 }
 
-function getCatalog_() {
-  const cache = CacheService.getScriptCache();
-  const cached = cache.get('catalog-v1');
-  if (cached) return JSON.parse(cached);
-
-  const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
-  const categories = spreadsheet.getSheets()
-    .filter(sheet => !isExcludedSheet_(sheet.getName()))
-    .map(sheetToCategory_)
-    .filter(category => category && category.products.length);
-
-  const result = {
-    success: true,
-    updatedAt: new Date().toISOString(),
-    categories: categories
+function buildCatalog_() {
+  const rows = downloadRows_();
+  return {
+    sale: { label: 'Venta', categories: [
+      saleCategory_(rows.camera, 'Cámara', 'cam'),
+      saleCategory_(rows.light, 'Iluminación', 'ilu'),
+      saleCategory_(rows.sound, 'Sonido', 'son'),
+      saleCategory_(rows.production, 'Producción', 'pro')
+    ] },
+    rental: { label: 'Rental', categories: rentalCategories_(rows.rental) }
   };
-  cache.put('catalog-v1', JSON.stringify(result), CACHE_SECONDS);
-  return result;
 }
 
-function sheetToCategory_(sheet) {
-  const values = sheet.getDataRange().getDisplayValues();
-  if (!values.length) return null;
-  const header = findHeader_(values);
-  if (!header) return null;
+function downloadRows_() {
+  const keys = Object.keys(DRIVE_FILES);
+  const requests = keys.map(function (key) {
+    return { url: 'https://drive.usercontent.google.com/download?id=' + encodeURIComponent(DRIVE_FILES[key]) + '&export=download&confirm=t', muteHttpExceptions: true, followRedirects: true };
+  });
+  const responses = UrlFetchApp.fetchAll(requests);
+  const rows = {};
+  responses.forEach(function (response, index) {
+    if (response.getResponseCode() !== 200) throw new Error('Drive respondió ' + response.getResponseCode() + ' para ' + keys[index]);
+    rows[keys[index]] = xlsxRows_(response.getBlob());
+  });
+  return rows;
+}
 
+function saleCategory_(rows, label, prefix) {
   const products = [];
-  for (let rowIndex = header.row + 1; rowIndex < values.length; rowIndex++) {
-    const row = values[rowIndex];
-    const name = cell_(row, header.columns.name);
-    const rawPrice = cell_(row, header.columns.price);
-    if (!name || !rawPrice) continue;
-    const active = normalize_(cell_(row, header.columns.active));
-    if (['no', 'false', '0', 'inactivo'].indexOf(active) >= 0) continue;
-    const price = parsePrice_(rawPrice);
-    if (!isFinite(price) || price < 0) continue;
+  rows.forEach(function (row) {
+    const name = clean_(row[1]);
+    const lowered = normalize_(name);
+    if (!name || lowered === 'kimun spa' || startsWithAny_(lowered, ['insumos', 'total', 'iva', 'contacto'])) return;
+    products.push({ id: prefix + '-' + pad_(products.length + 1), name: name, brand: clean_(row[3]), detail: clean_(row[4]), mode: 'Venta', category: label });
+  });
+  return { name: label, products: products };
+}
 
-    const imageValue = cell_(row, header.columns.image);
-    products.push({
-      id: cell_(row, header.columns.id) || slug_(sheet.getName() + '-' + name + '-' + rowIndex),
-      name: name,
-      price: price,
-      brand: cell_(row, header.columns.brand),
-      detail: cell_(row, header.columns.detail),
-      stock: cell_(row, header.columns.stock),
-      image: resolveImage_(imageValue)
+function rentalCategories_(rows) {
+  const names = { HMI: 'HMI', TUNGTENO: 'Tungsteno', LED: 'LED', TUBOS: 'Tubos', OTROS: 'Otros', ACCESORIOS: 'Accesorios' };
+  const grouped = { HMI: [], Tungsteno: [], LED: [], Tubos: [], Otros: [], Accesorios: [] };
+  let section = 'Otros';
+  rows.forEach(function (row) {
+    const name = clean_(row[1]);
+    if (!name) return;
+    const upper = name.toUpperCase();
+    if (names[upper]) { section = names[upper]; return; }
+    const lowered = normalize_(name);
+    if (startsWithAny_(lowered, ['total', 'iva', 'contacto', 'kimuntecnica'])) return;
+    const products = grouped[section];
+    products.push({ id: 'ren-' + section.slice(0, 3).toLowerCase() + '-' + pad_(products.length + 1), name: name, brand: clean_(row[3]), detail: '', availability: clean_(row[5]), mode: 'Rental', category: section });
+  });
+  return Object.keys(grouped).filter(function (name) { return grouped[name].length; }).map(function (name) { return { name: name, products: grouped[name] }; });
+}
+
+function xlsxRows_(blob) {
+  const files = {};
+  const archive = blob.setContentType('application/zip');
+  Utilities.unzip(archive).forEach(function (blob) { files[String(blob.getName()).replace(/^\//, '')] = blob.getDataAsString('UTF-8'); });
+  const strings = sharedStrings_(files['xl/sharedStrings.xml']);
+  const xml = files['xl/worksheets/sheet1.xml'];
+  if (!xml) throw new Error('El Excel no contiene una primera hoja legible.');
+  const document = XmlService.parse(xml);
+  const root = document.getRootElement();
+  const ns = root.getNamespace();
+  const rows = [];
+  root.getChild('sheetData', ns).getChildren('row', ns).forEach(function (rowNode) {
+    const rowNumber = Number(rowNode.getAttribute('r').getValue()) - 1;
+    const row = rows[rowNumber] || [];
+    rowNode.getChildren('c', ns).forEach(function (cell) {
+      const column = columnIndex_(cell.getAttribute('r').getValue());
+      const type = cell.getAttribute('t');
+      const valueNode = cell.getChild('v', ns);
+      let value = valueNode ? valueNode.getValue() : '';
+      if (type && type.getValue() === 's') value = strings[Number(value)] || '';
+      if (type && type.getValue() === 'inlineStr') { const inline = cell.getChild('is', ns); value = inline ? inline.getValue() : ''; }
+      row[column] = value;
     });
-  }
-  return { name: cleanCategoryName_(sheet.getName()), products: products };
+    rows[rowNumber] = row;
+  });
+  return rows;
 }
 
-function findHeader_(values) {
-  const maxRows = Math.min(values.length, 15);
-  for (let row = 0; row < maxRows; row++) {
-    const normalized = values[row].map(normalize_);
-    const columns = {
-      id: findColumn_(normalized, ['id', 'sku', 'codigo', 'cod']),
-      name: findColumn_(normalized, ['producto', 'nombre', 'insumo', 'item', 'articulo', 'descripcion producto']),
-      price: findColumn_(normalized, ['precio', 'valor', 'precio venta', 'venta', 'precio clp']),
-      brand: findColumn_(normalized, ['marca', 'fabricante']),
-      detail: findColumn_(normalized, ['detalle', 'descripcion', 'presentacion', 'formato']),
-      stock: findColumn_(normalized, ['stock', 'disponible', 'cantidad disponible']),
-      image: findColumn_(normalized, ['imagen', 'foto', 'url imagen', 'archivo imagen']),
-      active: findColumn_(normalized, ['activo', 'publicar', 'visible', 'estado'])
-    };
-    if (columns.name >= 0 && columns.price >= 0) return { row: row, columns: columns };
-  }
-  return null;
+function sharedStrings_(xml) {
+  if (!xml) return [];
+  const document = XmlService.parse(xml);
+  const root = document.getRootElement();
+  const ns = root.getNamespace();
+  return root.getChildren('si', ns).map(function (item) { return item.getValue(); });
 }
 
-function resolveImage_(value) {
-  if (!value) return '';
-  const directId = extractDriveId_(value);
-  if (directId) return 'https://drive.google.com/thumbnail?id=' + directId + '&sz=w1000';
-  if (/^https?:\/\//i.test(value)) return value;
-  try {
-    const files = DriveApp.getFolderById(DRIVE_FOLDER_ID).getFilesByName(value);
-    if (files.hasNext()) return 'https://drive.google.com/thumbnail?id=' + files.next().getId() + '&sz=w1000';
-  } catch (error) {
-    console.warn('Imagen no encontrada: ' + value);
-  }
-  return '';
+function columnIndex_(reference) {
+  const letters = String(reference).match(/^[A-Z]+/)[0];
+  let index = 0;
+  for (let i = 0; i < letters.length; i++) index = index * 26 + letters.charCodeAt(i) - 64;
+  return index - 1;
 }
 
-function extractDriveId_(value) {
-  const text = String(value).trim();
-  const rawId = text.match(/^[-\w]{20,}$/);
-  if (rawId) return rawId[0];
-  if (!/(?:drive|docs)\.google\.com/i.test(text)) return '';
-  const match = text.match(/(?:\/d\/|[?&]id=)([-\w]{20,})/);
-  return match ? match[1] : '';
+function output_(value, callback) {
+  const json = JSON.stringify(value);
+  if (/^[A-Za-z_$][\w$\.]*$/.test(callback)) return ContentService.createTextOutput(callback + '(' + json + ');').setMimeType(ContentService.MimeType.JAVASCRIPT);
+  return ContentService.createTextOutput(json).setMimeType(ContentService.MimeType.JSON);
 }
 
-function findColumn_(headers, aliases) {
-  for (let i = 0; i < aliases.length; i++) {
-    const index = headers.indexOf(normalize_(aliases[i]));
-    if (index >= 0) return index;
-  }
-  return -1;
-}
-
-function cell_(row, index) { return index >= 0 ? String(row[index] || '').trim() : ''; }
-function normalize_(value) { return String(value || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
-function parsePrice_(value) { return Number(String(value).replace(/[^0-9,-]/g, '').replace(/\./g, '').replace(',', '.')); }
-function slug_(value) { return normalize_(value).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
-function cleanCategoryName_(value) { return String(value).replace(/^CAT[_ -]*/i, '').trim(); }
-function isExcludedSheet_(name) { const key = normalize_(name); return key.charAt(0) === '_' || EXCLUDED_SHEETS.indexOf(key) >= 0; }
-function json_(value) { return ContentService.createTextOutput(JSON.stringify(value)).setMimeType(ContentService.MimeType.JSON); }
-
-function clearCatalogCache() {
-  CacheService.getScriptCache().remove('catalog-v1');
-}
+function clean_(value) { return String(value == null ? '' : value).replace(/�/g, '°').replace(/\s+/g, ' ').trim(); }
+function normalize_(value) { return clean_(value).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
+function startsWithAny_(value, words) { return words.some(function (word) { return value.indexOf(word) === 0; }); }
+function pad_(number) { return ('000' + number).slice(-3); }
