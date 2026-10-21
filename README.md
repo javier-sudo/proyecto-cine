@@ -4,7 +4,11 @@ Catálogo web de venta de insumos y rental para cine y producción audiovisual. 
 
 ## Catálogo actual
 
-Los datos se generan desde las cinco planillas entregadas por KIMUN: cámara, iluminación, sonido, producción y rental. Para reconstruir `dist/catalog-data.js`, deja los archivos fuente en `.source/` con los nombres usados por `scripts/build_catalog.py` y ejecuta el script con Python y `openpyxl`.
+Los datos se generan desde las cinco planillas entregadas por KIMUN: cámara, iluminación, sonido, producción y rental. La carpeta oficial de Drive es `1TEo8DNmT0vXpgZIKg-fnn6ADLvHusOUo`.
+
+El workflow `.github/workflows/sync-drive-catalog.yml` descarga las cinco planillas por sus IDs estables, reconstruye `dist/catalog-data.js` y publica GitHub Pages cuando detecta cambios. Se ejecuta cada 15 minutos y también puede iniciarse manualmente desde GitHub Actions.
+
+Para reconstruirlo localmente, ejecuta primero `python scripts/sync_drive_catalog.py` y luego `python scripts/build_catalog.py`. Requiere `openpyxl`.
 
 Por ahora las tarjetas no muestran fotografías de productos. El único recurso gráfico usado es el logo oficial de KIMUN.
 

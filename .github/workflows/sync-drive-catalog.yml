@@ -1,0 +1,71 @@
+name: Sincronizar catálogo desde Drive
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/15 * * * *"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/sync-drive-catalog.yml"
+      - "scripts/sync_drive_catalog.py"
+      - "scripts/build_catalog.py"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kimun-drive-catalog
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar lector de Excel
+        run: python -m pip install openpyxl
+
+      - name: Descargar Excel desde Drive
+        run: python scripts/sync_drive_catalog.py
+
+      - name: Reconstruir catálogo
+        run: python scripts/build_catalog.py
+
+      - name: Detectar cambios
+        id: changes
+        shell: bash
+        run: |
+          if git diff --quiet -- dist/catalog-data.js; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Guardar catálogo actualizado
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dist/catalog-data.js
+          git commit -m "Sync catalog from KIMUN Drive"
+          git push origin HEAD:main
+
+      - name: Publicar GitHub Pages
+        if: steps.changes.outputs.changed == 'true'
+        shell: bash
+        run: |
+          git fetch origin gh-pages
+          previous="$(git rev-parse origin/gh-pages)"
+          git subtree split --prefix dist -b gh-pages-sync
+          git push origin gh-pages-sync:gh-pages --force-with-lease=gh-pages:"$previous"
+
