@@ -46,11 +46,21 @@ body{background:var(--paper);color:var(--ink)}
 .empty-state strong{color:#fff}
 .about-section{background:#0a0a0b}
 .about-copy>p{color:#d7d2cb}
-.purchase-flow{background:var(--red);color:#fff}
-.purchase-flow .eyebrow,.steps>li>span{color:#111113}
-.steps p{color:rgba(255,255,255,.78)}
+.purchase-flow{background:#0d0d0f;color:#fff;grid-template-columns:minmax(360px,40%) 1fr;padding:0;gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.purchase-flow>div:first-child{position:relative;overflow:hidden;background:var(--red);padding:clamp(72px,8vw,120px) 5vw;display:flex;flex-direction:column;justify-content:center}
+.purchase-flow>div:first-child>*{position:relative;z-index:1}
+.purchase-flow .eyebrow{color:#111113}
+.purchase-flow h2{max-width:520px;color:#fff}
+.steps{padding:clamp(52px,6vw,92px) 5vw;display:flex;flex-direction:column;justify-content:center}
+.steps li{grid-template-columns:58px 1fr;gap:20px;min-height:122px;padding:24px 0;align-items:center;border-color:rgba(255,255,255,.16);transition:padding-left .2s,background .2s}
+.steps li:hover{padding-left:14px;background:linear-gradient(90deg,rgba(226,35,26,.1),transparent 72%)}
+.steps>li>span{width:42px;height:42px;padding:0;border:1px solid var(--red);display:grid;place-items:center;color:var(--red);font-size:10px;font-weight:700;letter-spacing:.12em}
+.steps li:hover>span{background:var(--red);color:#fff}
+.steps strong{font-size:clamp(28px,2.3vw,38px);line-height:1}
+.steps p{color:var(--muted);margin-top:9px;max-width:520px}
 .contact-section{background:#111113;color:#fff;border-top:1px solid var(--line)}
 .button.light{background:var(--red);border-color:var(--red);color:#fff}
 .button.light:hover{background:#fff;border-color:#fff;color:#111113}
 .button.dark{background:#fff;border-color:#fff;color:#111113}
 footer{background:#09090a;color:var(--muted);border-top:1px solid var(--line)}
+@media(max-width:780px){.purchase-flow{grid-template-columns:1fr;padding:0}.purchase-flow>div:first-child{min-height:300px;padding:64px 22px}.steps{padding:34px 22px 54px}.steps li{grid-template-columns:52px 1fr;min-height:112px}.steps li:hover{padding-left:0}}
