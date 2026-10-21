@@ -42,12 +42,12 @@ body{background:var(--paper);color:var(--ink)}
 .category-tab:hover{border-color:var(--red)}
 .product-card,.product-card:nth-child(4n+2){position:relative;background:#151517;border-color:rgba(255,255,255,.18);overflow:hidden}
 .product-card:before{content:"";position:absolute;right:0;top:0;width:11px;height:11px;background:var(--red)}
-.product-card:nth-child(4n+2){background:var(--red);color:#fff;border-color:var(--red)}
-.product-card:nth-child(4n+2):before{background:#fff}
-.product-card:nth-child(4n+2) .card-top,.product-card:nth-child(4n+2) .product-copy p{color:rgba(255,255,255,.76)}
-.product-card:nth-child(4n+2) .card-top{border-color:rgba(255,255,255,.3)}
-.product-card:nth-child(4n+2) .whatsapp-button{border-color:#fff;color:#fff}
-.product-card:nth-child(4n+2) .whatsapp-button:hover{background:#fff;color:#111113;border-color:#fff}
+.product-card:is(:nth-child(16n+2),:nth-child(16n+7),:nth-child(16n+12),:nth-child(16n+13)){background:var(--red);color:#fff;border-color:var(--red)}
+.product-card:is(:nth-child(16n+2),:nth-child(16n+7),:nth-child(16n+12),:nth-child(16n+13)):before{background:#fff}
+.product-card:is(:nth-child(16n+2),:nth-child(16n+7),:nth-child(16n+12),:nth-child(16n+13)) .card-top,.product-card:is(:nth-child(16n+2),:nth-child(16n+7),:nth-child(16n+12),:nth-child(16n+13)) .product-copy p{color:rgba(255,255,255,.76)}
+.product-card:is(:nth-child(16n+2),:nth-child(16n+7),:nth-child(16n+12),:nth-child(16n+13)) .card-top{border-color:rgba(255,255,255,.3)}
+.product-card:is(:nth-child(16n+2),:nth-child(16n+7),:nth-child(16n+12),:nth-child(16n+13)) .whatsapp-button{border-color:#fff;color:#fff}
+.product-card:is(:nth-child(16n+2),:nth-child(16n+7),:nth-child(16n+12),:nth-child(16n+13)) .whatsapp-button:hover{background:#fff;color:#111113;border-color:#fff}
 .product-card:hover{border-color:var(--red);box-shadow:0 18px 42px rgba(0,0,0,.42)}
 .whatsapp-button{border-color:rgba(255,255,255,.58)}
 .empty-state strong{color:#fff}
