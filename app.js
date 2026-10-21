@@ -2,7 +2,7 @@
   "use strict";
 
   const config = window.KIMUN_CONFIG || {};
-  const catalog = window.KIMUN_CATALOG || { sale: { categories: [] }, rental: { categories: [] } };
+  let catalog = window.KIMUN_CATALOG || { sale: { categories: [] }, rental: { categories: [] } };
   const state = { mode: "all", category: "Todos", query: "", visible: 16 };
   const $ = (selector) => document.querySelector(selector);
   const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -15,6 +15,29 @@
   const clean = (value) => String(value ?? "").trim();
   const key = (value) => clean(value).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
   const whatsappUrl = (message) => `https://wa.me/${clean(config.whatsapp)}?text=${encodeURIComponent(message)}`;
+
+  function loadDriveCatalog() {
+    if (!config.apiUrl) return;
+    const callback = `kimunCatalog_${Date.now()}`;
+    const script = document.createElement("script");
+    const cleanup = () => { delete window[callback]; script.remove(); };
+    const timer = setTimeout(() => { cleanup(); document.documentElement.dataset.catalogSource = "backup"; }, 60000);
+    window[callback] = (payload) => {
+      clearTimeout(timer);
+      if (payload && payload.success && payload.catalog) {
+        catalog = payload.catalog;
+        document.documentElement.dataset.catalogSource = "drive";
+        renderTabs();
+        renderProducts();
+      } else {
+        document.documentElement.dataset.catalogSource = "backup";
+      }
+      cleanup();
+    };
+    script.onerror = () => { clearTimeout(timer); cleanup(); document.documentElement.dataset.catalogSource = "backup"; };
+    script.src = `${config.apiUrl}?callback=${encodeURIComponent(callback)}&_=${Date.now()}`;
+    document.head.appendChild(script);
+  }
 
   function modeCatalogs() {
     return state.mode === "all" ? [catalog.sale, catalog.rental] : [catalog[state.mode]];
@@ -128,5 +151,5 @@
   }
 
   $("#year").textContent = new Date().getFullYear();
-  showSlide(0); startCarousel(); setMode("all");
+  showSlide(0); startCarousel(); setMode("all"); loadDriveCatalog();
 })();
