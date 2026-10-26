@@ -14,7 +14,7 @@
 <body>
   <header class="site-header">
     <a class="brand" href="#inicio" aria-label="KIMUN, inicio"><span class="logo-crop"><img src="images/kimun-logo-completo.webp" alt="KIMUN Evolución Técnica"></span></a>
-    <nav aria-label="Navegación principal"><a href="#catalogo" data-set-mode="sale">Venta de insumos</a><a href="#catalogo" data-set-mode="rental">Arriendo de iluminación</a><a href="#camion">Camión</a><a href="#nosotros">Nosotros</a><a href="#contacto">Contacto</a></nav>
+    <nav aria-label="Navegación principal"><a href="#catalogo" data-set-mode="sale">Venta de insumos</a><a href="#catalogo" data-set-mode="rental">Arriendo de iluminación</a><a href="#catalogo" data-set-mode="truck">Arriendo de camión</a><a href="#nosotros">Nosotros</a><a href="#contacto">Contacto</a></nav>
     <a class="quote-button" id="headerWhatsapp" target="_blank" rel="noopener noreferrer">Contacto</a>
   </header>
 
@@ -36,7 +36,7 @@
       </div>
     </section>
 
-    <section class="truck-section" id="camion" aria-labelledby="truckTitle">
+    <section class="truck-section" id="camion" aria-labelledby="truckTitle" hidden>
       <div class="truck-gallery" id="truckGallery" aria-roledescription="carrusel" aria-label="Galería del camión KIMUN">
         <figure class="truck-slide active"><img src="images/camion/camion-exterior-trasera.jpeg" alt="Vista posterior del camión KIMUN en la calle" loading="lazy"><figcaption>Vista exterior</figcaption></figure>
         <figure class="truck-slide"><img src="images/camion/camion-exterior-lateral.jpeg" alt="Vista lateral de la caja negra y roja del camión" loading="lazy"><figcaption>Caja de 4,40 metros</figcaption></figure>
@@ -73,14 +73,17 @@
         <button class="mode-button active" type="button" role="tab" data-mode="all" aria-selected="true"><span>00</span> Todo el catálogo</button>
         <button class="mode-button" type="button" role="tab" data-mode="sale" aria-selected="false"><span>01</span> Venta de insumos</button>
         <button class="mode-button" type="button" role="tab" data-mode="rental" aria-selected="false"><span>02</span> Arriendo de iluminación</button>
+        <button class="mode-button" type="button" role="tab" data-mode="truck" aria-selected="false"><span>03</span> Arriendo de camión</button>
       </div>
-      <div class="catalog-tools">
-        <label class="search-box" for="searchInput"><span class="search-icon" aria-hidden="true">⌕</span><span class="search-content"><span class="search-label">Buscar en venta y arriendo</span><input id="searchInput" type="search" placeholder="Producto, equipo, marca o detalle…" aria-label="Buscar en venta y arriendo" autocomplete="off"></span></label>
-        <div class="category-tabs" id="categoryTabs" role="tablist" aria-label="Áreas"></div>
+      <div id="catalogProducts">
+        <div class="catalog-tools">
+          <label class="search-box" for="searchInput"><span class="search-icon" aria-hidden="true">⌕</span><span class="search-content"><span class="search-label">Buscar en venta y arriendo</span><input id="searchInput" type="search" placeholder="Producto, equipo, marca o detalle…" aria-label="Buscar en venta y arriendo" autocomplete="off"></span></label>
+          <div class="category-tabs" id="categoryTabs" role="tablist" aria-label="Áreas"></div>
+        </div>
+        <div class="product-grid" id="productGrid" aria-live="polite"></div>
+        <div class="catalog-more"><span id="catalogResults" aria-live="polite"></span><button class="button outline" id="loadMore" type="button" hidden>Mostrar más</button></div>
+        <div class="empty-state" id="emptyState" hidden><strong>No encontramos resultados.</strong><span>Prueba con otra palabra o área.</span></div>
       </div>
-      <div class="product-grid" id="productGrid" aria-live="polite"></div>
-      <div class="catalog-more"><span id="catalogResults" aria-live="polite"></span><button class="button outline" id="loadMore" type="button" hidden>Mostrar más</button></div>
-      <div class="empty-state" id="emptyState" hidden><strong>No encontramos resultados.</strong><span>Prueba con otra palabra o área.</span></div>
     </section>
 
     <section class="about-section" id="nosotros">
@@ -110,6 +113,6 @@
 
   <script src="config.js?v=7"></script>
   <script src="catalog-data.js?v=1"></script>
-  <script src="app.js?v=14"></script>
+  <script src="app.js?v=15"></script>
 </body>
 </html>
