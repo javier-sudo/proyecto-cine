@@ -9,8 +9,11 @@
   const els = {
     grid: $("#productGrid"), tabs: $("#categoryTabs"), search: $("#searchInput"), summary: $("#catalogSummary"),
     title: $("#catalogTitle"), empty: $("#emptyState"),
-    template: $("#productTemplate"), loadMore: $("#loadMore"), results: $("#catalogResults")
+    template: $("#productTemplate"), loadMore: $("#loadMore"), results: $("#catalogResults"),
+    productsPanel: $("#catalogProducts"), truck: $("#camion"), modeSwitch: $(".mode-switch")
   };
+
+  els.modeSwitch.after(els.truck);
 
   const clean = (value) => String(value ?? "").trim();
   const key = (value) => clean(value).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -26,8 +29,10 @@
       if (payload && payload.success && payload.catalog) {
         catalog = payload.catalog;
         document.documentElement.dataset.catalogSource = "drive";
-        renderTabs();
-        renderProducts();
+        if (state.mode !== "truck") {
+          renderTabs();
+          renderProducts();
+        }
       } else {
         document.documentElement.dataset.catalogSource = "backup";
       }
@@ -51,19 +56,28 @@
   }
 
   function setMode(mode) {
-    state.mode = ["sale", "rental"].includes(mode) ? mode : "all";
+    state.mode = ["sale", "rental", "truck"].includes(mode) ? mode : "all";
     state.category = "Todos";
     state.visible = 16;
+    const truckMode = state.mode === "truck";
+    els.productsPanel.hidden = truckMode;
+    els.truck.hidden = !truckMode;
     els.title.textContent = state.mode === "sale"
       ? "Insumos disponibles para venta."
       : state.mode === "rental"
         ? "Iluminación disponible para arriendo."
+        : truckMode
+          ? "Camión disponible para arriendo."
         : "Venta y arriendo para tu producción.";
     $$(".mode-button").forEach((button) => {
       const active = button.dataset.mode === state.mode;
       button.classList.toggle("active", active);
       button.setAttribute("aria-selected", active ? "true" : "false");
     });
+    if (truckMode) {
+      els.summary.textContent = "Servicio de transporte para producciones";
+      return;
+    }
     renderTabs();
     renderProducts();
   }
