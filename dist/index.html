@@ -4,35 +4,33 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0c0c0d">
-  <meta name="description" content="KIMUN: venta de insumos y arriendo de equipos para cine y producción audiovisual en Santiago de Chile.">
-  <title>KIMUN | Venta y rental para cine</title>
+  <meta name="description" content="KIMUN: venta de insumos para cámara, video, iluminación y sonido, además de arriendo de iluminación para cine en Santiago de Chile.">
+  <title>KIMUN | Venta y arriendo para cine</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=19">
+  <link rel="stylesheet" href="styles.css?v=20">
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="#inicio" aria-label="KIMUN, inicio"><span class="logo-crop"><img src="images/kimun-logo-alt.jpg" alt="KIMUN Evolución Técnica"></span></a>
-    <nav aria-label="Navegación principal"><a href="#catalogo" data-set-mode="sale">Venta de insumos</a><a href="#catalogo" data-set-mode="rental">Rental de equipos</a><a href="#camion">Camión</a><a href="#nosotros">Nosotros</a><a href="#contacto">Contacto</a></nav>
+    <a class="brand" href="#inicio" aria-label="KIMUN, inicio"><span class="logo-crop"><img src="images/kimun-logo-completo.webp" alt="KIMUN Evolución Técnica"></span></a>
+    <nav aria-label="Navegación principal"><a href="#catalogo" data-set-mode="sale">Venta de insumos</a><a href="#catalogo" data-set-mode="rental">Arriendo de iluminación</a><a href="#camion">Camión</a><a href="#nosotros">Nosotros</a><a href="#contacto">Contacto</a></nav>
     <a class="quote-button" id="headerWhatsapp" target="_blank" rel="noopener noreferrer">Contacto</a>
   </header>
 
   <main>
     <section class="hero" id="inicio">
       <div class="hero-copy">
-        <h1>Todo para que el rodaje <em>siga.</em></h1>
-        <p class="hero-lead">Venta de insumos y arriendo de iluminación y grip para cámara, sonido y producción audiovisual.</p>
-        <div class="hero-actions"><a class="button primary" href="#catalogo" data-set-mode="sale">Ver productos</a><a class="button ghost" href="#catalogo" data-set-mode="rental">Ver rental</a></div>
-        <div class="hero-meta"><span>278 artículos publicados</span><span>Cotización personalizada</span><span>Atención directa</span></div>
+        <h1>Indispensables en <em>rodaje.</em></h1>
+        <p class="hero-lead">Venta de insumos para cámara, video, iluminación y sonido. Arriendo especializado exclusivamente en iluminación.</p>
+        <div class="hero-actions"><a class="button primary" href="#catalogo" data-set-mode="sale">Ver productos</a><a class="button ghost" href="#catalogo" data-set-mode="rental">Ver iluminación</a></div>
+        <div class="hero-meta"><span>277 artículos publicados</span><span>Cotización personalizada</span><span>Atención directa</span></div>
       </div>
       <div class="hero-art">
         <div class="hero-carousel" id="heroCarousel" aria-roledescription="carrusel" aria-label="Producción cinematográfica">
           <figure class="hero-slide active"><img src="images/hero-rodaje.png" alt="Equipo profesional grabando una escena con cámara de cine" fetchpriority="high"><figcaption><span>RODAJE</span> Rodaje en movimiento</figcaption></figure>
           <figure class="hero-slide"><img src="images/hero-iluminacion.png" alt="Técnicos preparando iluminación profesional en un set" loading="lazy"><figcaption><span>ILUMINACIÓN</span> Iluminación de set</figcaption></figure>
           <figure class="hero-slide"><img src="images/hero-accesorios.png" alt="Accesorios profesionales preparados para una producción" loading="lazy"><figcaption><span>PRODUCCIÓN</span> Accesorios de producción</figcaption></figure>
-          <figure class="hero-slide"><img src="images/hero-camara.png" alt="Cámara de cine profesional completamente equipada" loading="lazy"><figcaption><span>CÁMARA</span> Cámara lista para rodar</figcaption></figure>
-          <figure class="hero-slide"><img src="images/hero-lentes.png" alt="Maleta profesional con lentes y filtros cinematográficos" loading="lazy"><figcaption><span>ÓPTICA</span> Lentes y precisión</figcaption></figure>
           <figure class="hero-slide"><img src="images/hero-sonido.png" alt="Equipo profesional de sonido directo para cine" loading="lazy"><figcaption><span>SONIDO</span> Sonido directo</figcaption></figure>
         </div>
       </div>
@@ -53,7 +51,7 @@
         <div class="truck-progress" id="truckProgress" aria-hidden="true"></div>
       </div>
       <div class="truck-copy">
-        <p class="eyebrow">Rental destacado</p>
+        <p class="eyebrow">Servicio de transporte</p>
         <h2 id="truckTitle">Camión de producción.</h2>
         <p class="truck-intro">Espacio de carga cerrado para mover equipos e insumos de rodaje. Cuenta con acceso posterior, plataforma de carga y estantería interior.</p>
         <dl class="truck-specs">
@@ -74,10 +72,10 @@
       <div class="mode-switch" role="tablist" aria-label="Tipo de catálogo">
         <button class="mode-button active" type="button" role="tab" data-mode="all" aria-selected="true"><span>00</span> Todo el catálogo</button>
         <button class="mode-button" type="button" role="tab" data-mode="sale" aria-selected="false"><span>01</span> Venta de insumos</button>
-        <button class="mode-button" type="button" role="tab" data-mode="rental" aria-selected="false"><span>02</span> Rental de equipos</button>
+        <button class="mode-button" type="button" role="tab" data-mode="rental" aria-selected="false"><span>02</span> Arriendo de iluminación</button>
       </div>
       <div class="catalog-tools">
-        <label class="search-box" for="searchInput"><span class="search-icon" aria-hidden="true">⌕</span><span class="search-content"><span class="search-label">Buscar en venta y rental</span><input id="searchInput" type="search" placeholder="Producto, equipo, marca o detalle…" aria-label="Buscar en venta y rental" autocomplete="off"></span></label>
+        <label class="search-box" for="searchInput"><span class="search-icon" aria-hidden="true">⌕</span><span class="search-content"><span class="search-label">Buscar en venta y arriendo</span><input id="searchInput" type="search" placeholder="Producto, equipo, marca o detalle…" aria-label="Buscar en venta y arriendo" autocomplete="off"></span></label>
         <div class="category-tabs" id="categoryTabs" role="tablist" aria-label="Áreas"></div>
       </div>
       <div class="product-grid" id="productGrid" aria-live="polite"></div>
@@ -87,31 +85,31 @@
 
     <section class="about-section" id="nosotros">
       <div><p class="eyebrow">KIMUN SpA</p><h2>Soluciones técnicas para producciones reales.</h2></div>
-      <div class="about-copy"><p>Somos una pyme chilena especializada en insumos y equipamiento para cine. Atendemos cámara, iluminación, sonido y producción desde Ñuñoa.</p><dl><div><dt>Dirección</dt><dd>Emilio Vaisse 690, Ñuñoa</dd></div></dl></div>
+      <div class="about-copy"><p>Somos una pyme chilena especializada en insumos para cámara, video, iluminación y sonido, además de arriendo de iluminación para cine desde Ñuñoa.</p><dl><div><dt>Dirección</dt><dd>Emilio Vaisse 690, Ñuñoa</dd></div></dl></div>
     </section>
 
     <section class="purchase-flow" id="como-funciona">
       <div><p class="eyebrow">Cómo funciona</p><h2>Del catálogo al set.</h2></div>
-      <ol class="steps"><li><span>01</span><div><strong>Encuentra</strong><p>Busca el producto o equipo que necesita tu producción.</p></div></li><li><span>02</span><div><strong>Consulta</strong><p>Abre WhatsApp desde el artículo con el mensaje ya preparado.</p></div></li><li><span>03</span><div><strong>Coordina</strong><p>Confirmamos stock, jornadas, IVA, retiro o despacho.</p></div></li></ol>
+      <ol class="steps"><li><span>01</span><div><strong>Encuentra</strong><p>Busca el producto o equipo que necesita tu producción.</p></div></li><li><span>02</span><div><strong>Consulta</strong><p>Usa el botón de Contacto para conversar directamente por WhatsApp.</p></div></li><li><span>03</span><div><strong>Coordina</strong><p>Confirmamos stock, jornadas, IVA, retiro o despacho.</p></div></li></ol>
     </section>
 
     <section class="contact-section" id="contacto">
       <p class="eyebrow">Contacto directo</p><h2>Cuéntanos qué necesita tu producción.</h2>
       <div class="contact-actions"><a class="button light" id="contactButton" target="_blank" rel="noopener noreferrer">Hablar por WhatsApp</a><a class="button dark" href="https://www.instagram.com/kimun.spa/" target="_blank" rel="noopener noreferrer">Instagram @kimun.spa</a></div>
-      <a class="contact-qr" href="https://wa.me/56993069261?text=Hola%20KIMUN%2C%20necesito%20informacion%20para%20una%20produccion%20audiovisual." target="_blank" rel="noopener noreferrer" aria-label="Abrir WhatsApp de KIMUN">
-        <span class="qr-frame"><img src="images/qr-whatsapp-kimun.svg" alt="Código QR para contactar a KIMUN por WhatsApp" loading="lazy"></span>
-        <span class="qr-copy"><strong>Escanea y conversemos</strong><span>Abre el WhatsApp de KIMUN directamente.</span><b>+56 9 9306 9261</b></span>
+      <a class="contact-qr" href="https://www.instagram.com/kimun.spa/" target="_blank" rel="noopener noreferrer" aria-label="Abrir Instagram de KIMUN">
+        <span class="qr-frame"><img src="images/qr-instagram-kimun.svg" alt="Código QR para abrir el Instagram de KIMUN" loading="lazy"></span>
+        <span class="qr-copy"><strong>Síguenos en Instagram</strong><span>Escanea para abrir el perfil de KIMUN.</span><b>@kimun.spa</b></span>
       </a>
       <p class="contact-meta">kimuntecnica@gmail.com · +56 9 8614 3488 · +56 9 9306 9261</p>
     </section>
   </main>
 
-  <footer><a class="brand" href="#inicio"><span class="logo-crop"><img src="images/kimun-logo-alt.jpg" alt="KIMUN"></span></a><p>Venta y rental para cine.</p><p>© <span id="year"></span> KIMUN SpA</p></footer>
+  <footer><a class="brand" href="#inicio"><span class="logo-crop"><img src="images/kimun-logo-completo.webp" alt="KIMUN"></span></a><p>Insumos y arriendo de iluminación para cine.</p><p>© <span id="year"></span> KIMUN SpA</p></footer>
 
-  <template id="productTemplate"><article class="product-card"><div class="card-top"><span class="product-code"></span><span class="product-category"></span></div><div class="product-copy"><h3></h3><p></p></div><div class="product-bottom"><a class="whatsapp-button" target="_blank" rel="noopener noreferrer">Consultar por WhatsApp <span aria-hidden="true">↗</span></a></div></article></template>
+  <template id="productTemplate"><article class="product-card"><div class="card-top"><span class="product-code"></span><span class="product-category"></span></div><div class="product-copy"><h3></h3><p></p></div></article></template>
 
   <script src="config.js?v=7"></script>
   <script src="catalog-data.js?v=1"></script>
-  <script src="app.js?v=13"></script>
+  <script src="app.js?v=14"></script>
 </body>
 </html>
