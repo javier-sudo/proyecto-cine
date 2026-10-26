@@ -15,28 +15,6 @@
   const clean = (value) => String(value ?? "").trim();
   const key = (value) => clean(value).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
   const whatsappUrl = (message) => `https://wa.me/${clean(config.whatsapp)}?text=${encodeURIComponent(message)}`;
-  const truckProduct = {
-    id: "ren-tra-001",
-    name: "Camión de producción",
-    brand: "Hyundai HD35",
-    detail: "Caja 4,40 × 2,10 × 2,00 m · plataforma de carga",
-    availability: "1",
-    mode: "Rental",
-    category: "Transporte"
-  };
-
-  function includeTruck() {
-    catalog.rental ||= { label: "Rental", categories: [] };
-    catalog.rental.categories ||= [];
-    let transport = catalog.rental.categories.find((category) => key(category.name) === "transporte");
-    if (!transport) {
-      transport = { name: "Transporte", products: [] };
-      catalog.rental.categories.push(transport);
-    }
-    transport.products ||= [];
-    if (!transport.products.some((product) => key(product.id) === key(truckProduct.id))) transport.products.unshift(truckProduct);
-  }
-
   function loadDriveCatalog() {
     if (!config.apiUrl) return;
     const callback = `kimunCatalog_${Date.now()}`;
@@ -47,7 +25,6 @@
       clearTimeout(timer);
       if (payload && payload.success && payload.catalog) {
         catalog = payload.catalog;
-        includeTruck();
         document.documentElement.dataset.catalogSource = "drive";
         renderTabs();
         renderProducts();
@@ -80,8 +57,8 @@
     els.title.textContent = state.mode === "sale"
       ? "Insumos disponibles para venta."
       : state.mode === "rental"
-        ? "Equipos disponibles en rental."
-        : "Venta y rental para tu producción.";
+        ? "Iluminación disponible para arriendo."
+        : "Venta y arriendo para tu producción.";
     $$(".mode-button").forEach((button) => {
       const active = button.dataset.mode === state.mode;
       button.classList.toggle("active", active);
@@ -118,7 +95,7 @@
     const products = filteredProducts();
     const visible = products.slice(0, state.visible);
     const totalMode = allProducts().length;
-    const modeLabel = state.mode === "sale" ? "productos" : state.mode === "rental" ? "equipos" : "artículos";
+    const modeLabel = state.mode === "sale" ? "productos" : state.mode === "rental" ? "equipos de iluminación" : "artículos";
     els.summary.textContent = `${totalMode} ${modeLabel} · ${availableCategories().length} áreas`;
     els.empty.hidden = products.length > 0;
     els.grid.replaceChildren(...visible.map(productCard));
@@ -132,14 +109,11 @@
     const node = els.template.content.firstElementChild.cloneNode(true);
     const name = clean(product.name) || "Artículo";
     node.querySelector(".product-code").textContent = clean(product.id).toUpperCase();
-    node.querySelector(".product-category").textContent = `${product.mode} · ${product.category}`;
+    const modeDisplay = key(product.mode) === "rental" ? "Arriendo" : product.mode;
+    node.querySelector(".product-category").textContent = `${modeDisplay} · ${product.category}`;
     node.querySelector("h3").textContent = name;
     const details = [product.brand, product.detail, product.availability ? `${product.availability} disponibles` : ""].filter(Boolean);
     node.querySelector(".product-copy p").textContent = details.join(" · ") || "Disponibilidad a confirmar";
-    const whatsapp = node.querySelector(".whatsapp-button");
-    const message = `Hola ${config.businessName || "KIMUN"}, me interesa ${name} (${product.mode} · ${product.category}). ¿Me confirman disponibilidad y condiciones?`;
-    whatsapp.href = whatsappUrl(message);
-    whatsapp.setAttribute("aria-label", `Consultar por ${name} en WhatsApp`);
     return node;
   }
 
@@ -200,6 +174,5 @@
   truckGallery.addEventListener("mouseleave", startTruckGallery);
 
   $("#year").textContent = new Date().getFullYear();
-  includeTruck();
   showSlide(0); startCarousel(); showTruckSlide(0); startTruckGallery(); setMode("all"); loadDriveCatalog();
 })();

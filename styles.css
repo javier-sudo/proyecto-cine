@@ -71,3 +71,9 @@ footer{background:#09090a;color:var(--muted);border-top:1px solid var(--line)}
 @media(max-width:1080px){.site-header .logo-crop{width:172px;height:58px}}
 @media(max-width:780px){.site-header{height:76px}.site-header .logo-crop{width:136px;height:46px}.hero{min-height:auto}.truck-section{scroll-margin-top:76px}}
 @media(max-width:480px){.contact-qr{padding:14px;gap:14px}.qr-frame{width:104px;height:104px;flex-basis:104px}.qr-copy strong{font-size:24px}}
+
+/* Complete KIMUN mark and cleaner catalog cards without per-item contact actions. */
+.site-header{height:108px}.site-header .logo-crop{width:168px;height:92px;background:#fff}.logo-crop img{width:100%;height:100%;object-fit:contain;object-position:center;transform:none}.hero{min-height:calc(100vh - 108px)}.truck-section{scroll-margin-top:108px}.product-card,.product-card:nth-child(4n+2){min-height:205px}.product-copy{padding-bottom:12px}.qr-copy b{color:var(--red)}
+footer .logo-crop{width:112px;height:78px;background:#fff}
+@media(max-width:1080px){.site-header .logo-crop{width:148px;height:84px}}
+@media(max-width:780px){.site-header{height:82px}.site-header .logo-crop{width:110px;height:68px}.truck-section{scroll-margin-top:82px}}
