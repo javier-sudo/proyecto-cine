@@ -64,3 +64,10 @@ body{background:var(--paper);color:var(--ink)}
 .button.dark{background:#fff;border-color:#fff;color:#111113}
 footer{background:#09090a;color:var(--muted);border-top:1px solid var(--line)}
 @media(max-width:780px){.purchase-flow{grid-template-columns:1fr;padding:0}.purchase-flow>div:first-child{min-height:300px;padding:64px 22px}.steps{padding:34px 22px 54px}.steps li{grid-template-columns:52px 1fr;min-height:112px}.steps li:hover{padding-left:0}}
+
+/* Larger brand presence and direct WhatsApp QR. */
+.site-header{height:100px}.site-header .logo-crop{width:190px;height:64px}.hero{min-height:calc(100vh - 100px)}.truck-section{scroll-margin-top:100px}
+.contact-qr{width:min(100%,520px);margin:34px auto 0;padding:18px;display:flex;align-items:center;gap:20px;border:1px solid rgba(255,255,255,.42);background:#09090a;color:#fff;text-align:left;transition:transform .2s,border-color .2s}.contact-qr:hover{transform:translateY(-3px);border-color:#fff}.qr-frame{width:126px;height:126px;flex:0 0 126px;padding:8px;background:#fff;display:grid;place-items:center}.qr-frame img{display:block;width:100%;height:100%}.qr-copy{display:flex;flex-direction:column;gap:7px}.qr-copy strong{font-family:var(--serif);font-size:29px;line-height:1}.qr-copy span{color:#bdb6af;font-size:12px;line-height:1.45}.qr-copy b{color:var(--red);font-size:12px;letter-spacing:.08em}.contact-meta{margin-top:24px}
+@media(max-width:1080px){.site-header .logo-crop{width:172px;height:58px}}
+@media(max-width:780px){.site-header{height:76px}.site-header .logo-crop{width:136px;height:46px}.hero{min-height:auto}.truck-section{scroll-margin-top:76px}}
+@media(max-width:480px){.contact-qr{padding:14px;gap:14px}.qr-frame{width:104px;height:104px;flex-basis:104px}.qr-copy strong{font-size:24px}}
