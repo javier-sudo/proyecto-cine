@@ -184,8 +184,15 @@
     if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) truckTimer = setInterval(() => showTruckSlide(activeTruckSlide + 1), 3600);
   }
 
+  function stepTruckGallery(direction) {
+    showTruckSlide(activeTruckSlide + direction);
+    startTruckGallery();
+  }
+
   truckGallery.addEventListener("mouseenter", () => clearInterval(truckTimer));
   truckGallery.addEventListener("mouseleave", startTruckGallery);
+  $("#truckPrev").addEventListener("click", () => stepTruckGallery(-1));
+  $("#truckNext").addEventListener("click", () => stepTruckGallery(1));
 
   $("#year").textContent = new Date().getFullYear();
   showSlide(0); startCarousel(); showTruckSlide(0); startTruckGallery(); setMode("all"); loadDriveCatalog();
