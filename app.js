@@ -15,6 +15,27 @@
   const clean = (value) => String(value ?? "").trim();
   const key = (value) => clean(value).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
   const whatsappUrl = (message) => `https://wa.me/${clean(config.whatsapp)}?text=${encodeURIComponent(message)}`;
+  const truckProduct = {
+    id: "ren-tra-001",
+    name: "Camión de producción",
+    brand: "Hyundai HD35",
+    detail: "Caja 4,40 × 2,10 × 2,00 m · plataforma de carga",
+    availability: "1",
+    mode: "Rental",
+    category: "Transporte"
+  };
+
+  function includeTruck() {
+    catalog.rental ||= { label: "Rental", categories: [] };
+    catalog.rental.categories ||= [];
+    let transport = catalog.rental.categories.find((category) => key(category.name) === "transporte");
+    if (!transport) {
+      transport = { name: "Transporte", products: [] };
+      catalog.rental.categories.push(transport);
+    }
+    transport.products ||= [];
+    if (!transport.products.some((product) => key(product.id) === key(truckProduct.id))) transport.products.unshift(truckProduct);
+  }
 
   function loadDriveCatalog() {
     if (!config.apiUrl) return;
@@ -26,6 +47,7 @@
       clearTimeout(timer);
       if (payload && payload.success && payload.catalog) {
         catalog = payload.catalog;
+        includeTruck();
         document.documentElement.dataset.catalogSource = "drive";
         renderTabs();
         renderProducts();
@@ -128,6 +150,7 @@
   const generalMessage = "Hola KIMUN, necesito información para una producción audiovisual.";
   $("#headerWhatsapp").href = whatsappUrl(generalMessage);
   $("#contactButton").href = whatsappUrl(generalMessage);
+  $("#truckWhatsapp").href = whatsappUrl("Hola KIMUN, quiero consultar la disponibilidad y condiciones del camión de producción.");
 
   const carousel = $("#heroCarousel");
   const slides = $$(".hero-slide");
@@ -150,6 +173,33 @@
     if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) carouselTimer = setInterval(() => showSlide(activeSlide + 1), 3000);
   }
 
+  const truckGallery = $("#truckGallery");
+  const truckSlides = $$(`#truckGallery .truck-slide`);
+  const truckProgress = $("#truckProgress");
+  let activeTruckSlide = 0;
+  let truckTimer;
+
+  truckProgress.replaceChildren(...truckSlides.map((_, index) => {
+    const marker = document.createElement("span");
+    marker.className = index === 0 ? "active" : "";
+    return marker;
+  }));
+
+  function showTruckSlide(index) {
+    activeTruckSlide = (index + truckSlides.length) % truckSlides.length;
+    truckSlides.forEach((slide, slideIndex) => slide.classList.toggle("active", slideIndex === activeTruckSlide));
+    [...truckProgress.children].forEach((marker, markerIndex) => marker.classList.toggle("active", markerIndex === activeTruckSlide));
+  }
+
+  function startTruckGallery() {
+    clearInterval(truckTimer);
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) truckTimer = setInterval(() => showTruckSlide(activeTruckSlide + 1), 3600);
+  }
+
+  truckGallery.addEventListener("mouseenter", () => clearInterval(truckTimer));
+  truckGallery.addEventListener("mouseleave", startTruckGallery);
+
   $("#year").textContent = new Date().getFullYear();
-  showSlide(0); startCarousel(); setMode("all"); loadDriveCatalog();
+  includeTruck();
+  showSlide(0); startCarousel(); showTruckSlide(0); startTruckGallery(); setMode("all"); loadDriveCatalog();
 })();

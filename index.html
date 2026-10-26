@@ -9,12 +9,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=17">
+  <link rel="stylesheet" href="styles.css?v=18">
 </head>
 <body>
   <header class="site-header">
     <a class="brand" href="#inicio" aria-label="KIMUN, inicio"><span class="logo-crop"><img src="images/kimun-logo-alt.jpg" alt="KIMUN Evolución Técnica"></span></a>
-    <nav aria-label="Navegación principal"><a href="#catalogo" data-set-mode="sale">Venta de insumos</a><a href="#catalogo" data-set-mode="rental">Rental de equipos</a><a href="#nosotros">Nosotros</a><a href="#contacto">Contacto</a></nav>
+    <nav aria-label="Navegación principal"><a href="#catalogo" data-set-mode="sale">Venta de insumos</a><a href="#catalogo" data-set-mode="rental">Rental de equipos</a><a href="#camion">Camión</a><a href="#nosotros">Nosotros</a><a href="#contacto">Contacto</a></nav>
     <a class="quote-button" id="headerWhatsapp" target="_blank" rel="noopener noreferrer">Contacto</a>
   </header>
 
@@ -24,7 +24,7 @@
         <h1>Todo para que el rodaje <em>siga.</em></h1>
         <p class="hero-lead">Venta de insumos y arriendo de iluminación y grip para cámara, sonido y producción audiovisual.</p>
         <div class="hero-actions"><a class="button primary" href="#catalogo" data-set-mode="sale">Ver productos</a><a class="button ghost" href="#catalogo" data-set-mode="rental">Ver rental</a></div>
-        <div class="hero-meta"><span>277 artículos publicados</span><span>Cotización personalizada</span><span>Atención directa</span></div>
+        <div class="hero-meta"><span>278 artículos publicados</span><span>Cotización personalizada</span><span>Atención directa</span></div>
       </div>
       <div class="hero-art">
         <div class="hero-carousel" id="heroCarousel" aria-roledescription="carrusel" aria-label="Producción cinematográfica">
@@ -35,6 +35,37 @@
           <figure class="hero-slide"><img src="images/hero-lentes.png" alt="Maleta profesional con lentes y filtros cinematográficos" loading="lazy"><figcaption><span>ÓPTICA</span> Lentes y precisión</figcaption></figure>
           <figure class="hero-slide"><img src="images/hero-sonido.png" alt="Equipo profesional de sonido directo para cine" loading="lazy"><figcaption><span>SONIDO</span> Sonido directo</figcaption></figure>
         </div>
+      </div>
+    </section>
+
+    <section class="truck-section" id="camion" aria-labelledby="truckTitle">
+      <div class="truck-gallery" id="truckGallery" aria-roledescription="carrusel" aria-label="Galería del camión KIMUN">
+        <figure class="truck-slide active"><img src="images/camion/camion-exterior-trasera.jpeg" alt="Vista posterior del camión KIMUN en la calle" loading="lazy"><figcaption>Vista exterior</figcaption></figure>
+        <figure class="truck-slide"><img src="images/camion/camion-exterior-lateral.jpeg" alt="Vista lateral de la caja negra y roja del camión" loading="lazy"><figcaption>Caja de 4,40 metros</figcaption></figure>
+        <figure class="truck-slide"><img src="images/camion/camion-exterior-posterior.jpeg" alt="Vista posterior del camión con su plataforma cerrada" loading="lazy"><figcaption>Acceso posterior</figcaption></figure>
+        <figure class="truck-slide"><img src="images/camion/camion-cabina.jpeg" alt="Cabina y caja del camión Hyundai HD35" loading="lazy"><figcaption>Hyundai HD35</figcaption></figure>
+        <figure class="truck-slide"><img src="images/camion/camion-lateral-izquierdo.jpeg" alt="Costado izquierdo del camión de producción" loading="lazy"><figcaption>Perfil de carga</figcaption></figure>
+        <figure class="truck-slide"><img src="images/camion/camion-lateral-derecho.jpeg" alt="Costado derecho del camión de producción" loading="lazy"><figcaption>Estructura cerrada</figcaption></figure>
+        <figure class="truck-slide"><img src="images/camion/camion-interior-plataforma.jpeg" alt="Interior del camión visto desde la plataforma elevadora" loading="lazy"><figcaption>Plataforma de carga</figcaption></figure>
+        <figure class="truck-slide"><img src="images/camion/camion-interior-vacio.jpeg" alt="Interior despejado de la caja del camión" loading="lazy"><figcaption>Interior de la caja</figcaption></figure>
+        <figure class="truck-slide"><img src="images/camion/camion-interior-estanteria.jpeg" alt="Interior del camión con estantería lateral" loading="lazy"><figcaption>Estantería interior</figcaption></figure>
+        <figure class="truck-slide"><img src="images/camion/camion-interior-carga.jpeg" alt="Interior amplio del camión preparado para carga" loading="lazy"><figcaption>Espacio para producción</figcaption></figure>
+        <div class="truck-progress" id="truckProgress" aria-hidden="true"></div>
+      </div>
+      <div class="truck-copy">
+        <p class="eyebrow">Rental destacado</p>
+        <h2 id="truckTitle">Camión de producción.</h2>
+        <p class="truck-intro">Espacio de carga cerrado para mover equipos e insumos de rodaje. Cuenta con acceso posterior, plataforma de carga y estantería interior.</p>
+        <dl class="truck-specs">
+          <div><dt>Altura total</dt><dd>2,95 m</dd></div>
+          <div><dt>Largo total</dt><dd>6,00 m</dd></div>
+          <div><dt>Ancho total</dt><dd>2,20 m</dd></div>
+          <div><dt>Largo caja</dt><dd>4,40 m</dd></div>
+          <div><dt>Ancho caja</dt><dd>2,10 m</dd></div>
+          <div><dt>Alto interior</dt><dd>2,00 m</dd></div>
+        </dl>
+        <a class="button primary truck-contact" id="truckWhatsapp" target="_blank" rel="noopener noreferrer">Consultar disponibilidad por WhatsApp</a>
+        <p class="truck-note">Disponibilidad y condiciones a confirmar.</p>
       </div>
     </section>
 
@@ -75,8 +106,8 @@
 
   <template id="productTemplate"><article class="product-card"><div class="card-top"><span class="product-code"></span><span class="product-category"></span></div><div class="product-copy"><h3></h3><p></p></div><div class="product-bottom"><a class="whatsapp-button" target="_blank" rel="noopener noreferrer">Consultar por WhatsApp <span aria-hidden="true">↗</span></a></div></article></template>
 
-  <script src="config.js?v=6"></script>
+  <script src="config.js?v=7"></script>
   <script src="catalog-data.js?v=1"></script>
-  <script src="app.js?v=12"></script>
+  <script src="app.js?v=13"></script>
 </body>
 </html>
