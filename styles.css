@@ -83,3 +83,7 @@ footer .logo-crop{width:112px;height:78px;background:#fff}
 /* Compact catalog rhythm, real KIMUN inventory imagery and service message. */
 .product-grid{gap:10px}.product-card,.product-card:nth-child(4n+2){min-height:164px;padding:16px}.card-top{padding-bottom:12px}.product-copy{padding:17px 0 0}.contact-lead{max-width:720px;margin:22px auto 0;color:#cfc9c2;font-size:16px;line-height:1.6}.contact-lead+.contact-actions{margin-top:28px}.qr-frame{padding:6px}
 @media(max-width:480px){.product-card,.product-card:nth-child(4n+2){min-height:150px}.product-copy{padding-top:15px}.contact-lead{font-size:14px}}
+
+/* Service-focused hero title, sized to remain balanced on every screen. */
+.hero h1.hero-title-service{font-size:clamp(58px,6.9vw,108px);line-height:.86;max-width:920px}
+@media(max-width:780px){.hero h1.hero-title-service{font-size:clamp(50px,14.5vw,76px);line-height:.9}}
