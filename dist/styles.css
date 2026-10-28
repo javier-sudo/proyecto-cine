@@ -87,3 +87,7 @@ footer .logo-crop{width:112px;height:78px;background:#fff}
 /* Service-focused hero title, sized to remain balanced on every screen. */
 .hero h1.hero-title-service{font-size:clamp(58px,6.9vw,108px);line-height:.86;max-width:920px}
 @media(max-width:780px){.hero h1.hero-title-service{font-size:clamp(50px,14.5vw,76px);line-height:.9}}
+
+/* Denser catalog requested by KIMUN; typography remains unchanged. */
+.product-grid{gap:8px}.product-card,.product-card:nth-child(4n+2){min-height:136px;padding:13px}.card-top{padding-bottom:9px}.product-copy{padding:12px 0 0}
+@media(max-width:480px){.product-card,.product-card:nth-child(4n+2){min-height:120px;padding:12px}.product-copy{padding-top:10px}}
