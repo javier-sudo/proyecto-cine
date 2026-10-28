@@ -91,3 +91,7 @@ footer .logo-crop{width:112px;height:78px;background:#fff}
 /* Denser catalog requested by KIMUN; typography remains unchanged. */
 .product-grid{gap:8px}.product-card,.product-card:nth-child(4n+2){min-height:136px;padding:13px}.card-top{padding-bottom:9px}.product-copy{padding:12px 0 0}
 @media(max-width:480px){.product-card,.product-card:nth-child(4n+2){min-height:120px;padding:12px}.product-copy{padding-top:10px}}
+
+/* Named contact details sourced from KIMUN's Drive record. */
+.contact-meta{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:10px 24px}.contact-meta>span{display:inline-flex;align-items:center;gap:8px}.contact-meta strong{color:#fff;font-weight:700}.contact-meta a{color:#d7d2cb}.contact-meta a:hover{color:#fff}
+@media(max-width:600px){.contact-meta{align-items:stretch;flex-direction:column;gap:13px}.contact-meta>span{justify-content:space-between;gap:14px;padding-top:13px;border-top:1px solid rgba(255,255,255,.18)}.contact-meta>span a{white-space:nowrap}}
