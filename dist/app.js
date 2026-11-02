@@ -17,6 +17,27 @@
 
   const clean = (value) => String(value ?? "").trim();
   const key = (value) => clean(value).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const synonymGroups = [
+    ["masking", "masking tape", "cinta de enmascarar", "cinta para enmascarar", "cinta de papel", "scotch", "tesa"],
+    ["gaffer", "gaffer tape", "cinta gaffer", "cinta de tela"],
+    ["amarra cables", "amarracables", "brida", "precinto", "zip tie"],
+    ["alusa", "papel aluminio", "aluminio", "alusa plas"],
+    ["ziploc", "ziplock", "bolsa hermetica", "bolsa con cierre"],
+    ["cine foil", "black foil", "papel aluminio negro", "aluminio negro"],
+    ["gelatina", "gel", "filtro de color", "filtro de luz"],
+    ["clamp", "pinza", "abrazadera"],
+    ["extension", "alargador", "cable alargador"],
+    ["dimmer", "regulador de luz", "control de intensidad"],
+    ["brocha", "pincel"],
+    ["liquido de humo", "liquido para maquina de humo", "fluido de humo"]
+  ].map((group) => group.map(key));
+  function searchableProduct(product) {
+    const base = key([product.name, product.brand, product.detail, product.category, product.mode].join(" "));
+    const synonyms = synonymGroups
+      .filter((group) => group.some((term) => base.includes(term)))
+      .flat();
+    return `${base} ${synonyms.join(" ")}`;
+  }
   const whatsappUrl = (message) => `https://wa.me/${clean(config.whatsapp)}?text=${encodeURIComponent(message)}`;
   function loadDriveCatalog() {
     if (!config.apiUrl) return;
@@ -100,7 +121,7 @@
     const query = key(state.query);
     return allProducts().filter((product) => {
       const inCategory = state.category === "Todos" || product.category === state.category;
-      const haystack = key([product.name, product.brand, product.detail, product.category, product.mode].join(" "));
+      const haystack = searchableProduct(product);
       return inCategory && (!query || haystack.includes(query));
     });
   }
