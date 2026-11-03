@@ -18,6 +18,8 @@ Por ahora las tarjetas no muestran fotografías de productos. El único recurso 
 
 Los cuatro Excel de venta generan las áreas Cámara, Iluminación, Sonido y Producción. El Excel de rental conserva sus secciones HMI, Tungsteno, LED, Tubos, Otros y Accesorios. El lector usa producto, marca, detalle y disponibilidad; los precios y las imágenes de producto no se publican.
 
+Para conservar un artículo en la planilla sin mostrarlo en la web, agrega una columna llamada `Ocultar` y escribe `X` en su fila. También se aceptan `Sí`, `Oculto` y `No publicar`.
+
 ## Conexión
 
 1. Mantén los cinco Excel con acceso **Restringido** en Drive; no uses “cualquier persona con el enlace”.

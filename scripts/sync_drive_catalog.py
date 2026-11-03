@@ -65,6 +65,38 @@ def validate_catalog(catalog: dict) -> None:
                     raise RuntimeError("Los valores de producto deben ser texto")
 
 
+def normalized(value: str) -> str:
+    import unicodedata
+
+    plain = "".join(character for character in unicodedata.normalize("NFD", value.lower()) if unicodedata.category(character) != "Mn")
+    return re.sub(r"\s+", " ", plain).strip()
+
+
+def should_publish(product: dict) -> bool:
+    name = normalized(product.get("name", ""))
+    detail = normalized(product.get("detail", ""))
+    hidden = (
+        ("gaffer" in name and "25 metros" in detail)
+        or "despacho" in name
+        or "lentilla de contraste" in name
+        or (name == "alambre 18" and "1 kilo" in detail)
+        or "masking 3 tradicional" in name
+        or "cubre zapatos negros" in name
+        or "linterna cuello" in name
+        or "destornillador camara" in name
+        or "liquido hazer" in name
+        or "liquido humo" in name
+    )
+    return not hidden
+
+
+def filter_catalog(catalog: dict) -> dict:
+    for mode in ("sale", "rental"):
+        for category in catalog[mode]["categories"]:
+            category["products"] = [product for product in category["products"] if should_publish(product)]
+    return catalog
+
+
 def write_catalog(catalog: dict) -> None:
     content = "window.KIMUN_CATALOG = " + json.dumps(catalog, ensure_ascii=False, indent=2) + ";\n"
     with NamedTemporaryFile("w", encoding="utf-8", newline="\n", dir=OUTPUT.parent, delete=False) as temporary:
@@ -76,5 +108,6 @@ def write_catalog(catalog: dict) -> None:
 if __name__ == "__main__":
     catalog = fetch_catalog(api_url())
     validate_catalog(catalog)
+    catalog = filter_catalog(catalog)
     write_catalog(catalog)
     print(f"Catálogo sanitizado: {OUTPUT.stat().st_size} bytes")

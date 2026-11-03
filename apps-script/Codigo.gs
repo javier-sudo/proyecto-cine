@@ -11,8 +11,8 @@ const DRIVE_FILES = {
   rental: '1RnUWQZCdlnu7U0Sy5o7-Kb7u34azfsnZ'
 };
 
-const CACHE_KEY = 'kimun-catalog-v2';
-const STALE_CACHE_KEY = 'kimun-catalog-v2-stale';
+const CACHE_KEY = 'kimun-catalog-v3';
+const STALE_CACHE_KEY = 'kimun-catalog-v3-stale';
 const CACHE_SECONDS = 900;
 const STALE_CACHE_SECONDS = 21600;
 const MAX_FILE_BYTES = 8 * 1024 * 1024;
@@ -91,12 +91,14 @@ function downloadRows_() {
 
 function saleCategory_(rows, label, prefix) {
   const products = [];
+  const hiddenColumn = hiddenColumn_(rows);
   rows.forEach(function (row) {
     const name = clean_(row[1]);
     const lowered = normalize_(name);
-    if (!name || lowered === 'kimun spa' || startsWithAny_(lowered, ['insumos', 'total', 'iva', 'contacto'])) return;
+    const detail = clean_(row[4]);
+    if (!name || lowered === 'kimun spa' || startsWithAny_(lowered, ['insumos', 'total', 'iva', 'contacto']) || isMarkedHidden_(row, hiddenColumn) || excludedProduct_(name, detail)) return;
     if (products.length >= MAX_ROWS) throw new Error('Demasiados productos en ' + label + '.');
-    products.push({ id: prefix + '-' + pad_(products.length + 1), name: name, brand: clean_(row[3]), detail: clean_(row[4]), mode: 'Venta', category: label });
+    products.push({ id: prefix + '-' + pad_(products.length + 1), name: name, brand: clean_(row[3]), detail: detail, mode: 'Venta', category: label });
   });
   return { name: label, products: products };
 }
@@ -106,13 +108,14 @@ function rentalCategories_(rows) {
   const grouped = { HMI: [], Tungsteno: [], LED: [], Tubos: [], Otros: [], Accesorios: [] };
   let section = 'Otros';
   let productCount = 0;
+  const hiddenColumn = hiddenColumn_(rows);
   rows.forEach(function (row) {
     const name = clean_(row[1]);
     if (!name) return;
     const upper = name.toUpperCase();
     if (names[upper]) { section = names[upper]; return; }
     const lowered = normalize_(name);
-    if (startsWithAny_(lowered, ['total', 'iva', 'contacto', 'kimuntecnica'])) return;
+    if (startsWithAny_(lowered, ['total', 'iva', 'contacto', 'kimuntecnica']) || isMarkedHidden_(row, hiddenColumn) || excludedProduct_(name, '')) return;
     productCount += 1;
     if (productCount > MAX_ROWS) throw new Error('Demasiados equipos de arriendo.');
     const products = grouped[section];
@@ -197,6 +200,40 @@ function output_(value, callback) {
     return ContentService.createTextOutput(callback + '(' + json + ');').setMimeType(ContentService.MimeType.JAVASCRIPT);
   }
   return ContentService.createTextOutput(json).setMimeType(ContentService.MimeType.JSON);
+}
+
+function hiddenColumn_(rows) {
+  for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+    const row = rows[rowIndex] || [];
+    for (let columnIndex = 0; columnIndex < row.length; columnIndex++) {
+      const value = normalize_(row[columnIndex]);
+      if (value === 'ocultar' || value === 'oculto' || value === 'ocultar web') return columnIndex;
+    }
+  }
+  return -1;
+}
+
+function isMarkedHidden_(row, column) {
+  if (column < 0) return false;
+  const value = normalize_(row[column]);
+  return ['x', 'si', 'ocultar', 'oculto', 'no publicar', 'false'].indexOf(value) !== -1;
+}
+
+function excludedProduct_(name, detail) {
+  const productName = normalize_(name);
+  const productDetail = normalize_(detail);
+  return (
+    (productName.indexOf('gaffer') !== -1 && productDetail.indexOf('25 metros') !== -1) ||
+    productName.indexOf('despacho') !== -1 ||
+    productName.indexOf('lentilla de contraste') !== -1 ||
+    (productName === 'alambre 18' && productDetail.indexOf('1 kilo') !== -1) ||
+    productName.indexOf('masking 3 tradicional') !== -1 ||
+    productName.indexOf('cubre zapatos negros') !== -1 ||
+    productName.indexOf('linterna cuello') !== -1 ||
+    productName.indexOf('destornillador camara') !== -1 ||
+    productName.indexOf('liquido hazer') !== -1 ||
+    productName.indexOf('liquido humo') !== -1
+  );
 }
 
 function clean_(value) { return String(value == null ? '' : value).replace(/�/g, '°').replace(/\s+/g, ' ').trim(); }
