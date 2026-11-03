@@ -110,26 +110,10 @@ window.KIMUN_CATALOG = {
             "category": "Cámara"
           },
           {
-            "id": "cam-014",
-            "name": "Gaffer negro 1\"",
-            "brand": "",
-            "detail": "25 metros",
-            "mode": "Venta",
-            "category": "Cámara"
-          },
-          {
             "id": "cam-015",
             "name": "Gaffer negro 1 \"",
             "brand": "",
             "detail": "50 metros",
-            "mode": "Venta",
-            "category": "Cámara"
-          },
-          {
-            "id": "cam-016",
-            "name": "Gaffer 2\" negro",
-            "brand": "",
-            "detail": "25 metros",
             "mode": "Venta",
             "category": "Cámara"
           },
@@ -492,28 +476,12 @@ window.KIMUN_CATALOG = {
             "detail": "",
             "mode": "Venta",
             "category": "Cámara"
-          },
-          {
-            "id": "cam-062",
-            "name": "Despacho Ñuñoa",
-            "brand": "",
-            "detail": "",
-            "mode": "Venta",
-            "category": "Cámara"
           }
         ]
       },
       {
         "name": "Iluminación",
         "products": [
-          {
-            "id": "ilu-001",
-            "name": "Lentilla de contraste",
-            "brand": "",
-            "detail": "",
-            "mode": "Venta",
-            "category": "Iluminación"
-          },
           {
             "id": "ilu-002",
             "name": "Cine Foil",
@@ -579,14 +547,6 @@ window.KIMUN_CATALOG = {
             "category": "Iluminación"
           },
           {
-            "id": "ilu-010",
-            "name": "Alambre 18",
-            "brand": "",
-            "detail": "1 kilo",
-            "mode": "Venta",
-            "category": "Iluminación"
-          },
-          {
             "id": "ilu-011",
             "name": "Alargador zapatilla",
             "brand": "",
@@ -629,14 +589,6 @@ window.KIMUN_CATALOG = {
           {
             "id": "ilu-016",
             "name": "Masking 2 tradicional",
-            "brand": "",
-            "detail": "",
-            "mode": "Venta",
-            "category": "Iluminación"
-          },
-          {
-            "id": "ilu-017",
-            "name": "Masking 3 tradicional",
             "brand": "",
             "detail": "",
             "mode": "Venta",
@@ -931,14 +883,6 @@ window.KIMUN_CATALOG = {
             "category": "Iluminación"
           },
           {
-            "id": "ilu-054",
-            "name": "Cubre zapatos negros",
-            "brand": "",
-            "detail": "50 pares",
-            "mode": "Venta",
-            "category": "Iluminación"
-          },
-          {
             "id": "ilu-055",
             "name": "Lona piso",
             "brand": "azul",
@@ -1075,14 +1019,6 @@ window.KIMUN_CATALOG = {
             "category": "Iluminación"
           },
           {
-            "id": "ilu-072",
-            "name": "linterna cuello",
-            "brand": "",
-            "detail": "",
-            "mode": "Venta",
-            "category": "Iluminación"
-          },
-          {
             "id": "ilu-073",
             "name": "linterna Cabeza",
             "brand": "",
@@ -1115,14 +1051,6 @@ window.KIMUN_CATALOG = {
             "category": "Iluminación"
           },
           {
-            "id": "ilu-077",
-            "name": "Destornillador camara",
-            "brand": "",
-            "detail": "",
-            "mode": "Venta",
-            "category": "Iluminación"
-          },
-          {
             "id": "ilu-078",
             "name": "Engrapadora",
             "brand": "",
@@ -1133,30 +1061,6 @@ window.KIMUN_CATALOG = {
           {
             "id": "ilu-079",
             "name": "Repuesto engrapadora",
-            "brand": "",
-            "detail": "",
-            "mode": "Venta",
-            "category": "Iluminación"
-          },
-          {
-            "id": "ilu-080",
-            "name": "Liquido hazer al aceite",
-            "brand": "",
-            "detail": "5 litors",
-            "mode": "Venta",
-            "category": "Iluminación"
-          },
-          {
-            "id": "ilu-081",
-            "name": "Liquido humo",
-            "brand": "",
-            "detail": "5 litros",
-            "mode": "Venta",
-            "category": "Iluminación"
-          },
-          {
-            "id": "ilu-082",
-            "name": "Despacho ñuñoa",
             "brand": "",
             "detail": "",
             "mode": "Venta",

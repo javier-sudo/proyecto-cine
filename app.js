@@ -51,6 +51,22 @@
       return editDistance(word, term) <= (term.length >= 8 ? 2 : 1);
     }));
   }
+  function isHiddenProduct(product) {
+    const name = key(product.name);
+    const detail = key(product.detail);
+    return (
+      (name.includes("gaffer") && detail.includes("25 metros")) ||
+      name.includes("despacho") ||
+      name.includes("lentilla de contraste") ||
+      (name === "alambre 18" && detail.includes("1 kilo")) ||
+      name.includes("masking 3 tradicional") ||
+      name.includes("cubre zapatos negros") ||
+      name.includes("linterna cuello") ||
+      name.includes("destornillador camara") ||
+      name.includes("liquido hazer") ||
+      name.includes("liquido humo")
+    );
+  }
   const whatsappUrl = (message) => `https://wa.me/${clean(config.whatsapp)}?text=${encodeURIComponent(message)}`;
   function loadDriveCatalog() {
     if (!config.apiUrl) return;
@@ -82,7 +98,17 @@
   }
 
   function allProducts() {
-    return modeCatalogs().filter(Boolean).flatMap((entry) => (entry.categories || []).flatMap((category) => category.products || []));
+    return modeCatalogs()
+      .filter(Boolean)
+      .flatMap((entry) => (entry.categories || []).flatMap((category) => category.products || []))
+      .filter((product) => !isHiddenProduct(product));
+  }
+
+  function publicProductCount() {
+    return [catalog.sale, catalog.rental]
+      .filter(Boolean)
+      .flatMap((entry) => (entry.categories || []).flatMap((category) => category.products || []))
+      .filter((product) => !isHiddenProduct(product)).length;
   }
 
   function availableCategories() {
@@ -144,6 +170,7 @@
     const visible = products.slice(0, state.visible);
     const totalMode = allProducts().length;
     const modeLabel = state.mode === "sale" ? "productos" : state.mode === "rental" ? "equipos de iluminación" : "artículos";
+    $("#publishedCount").textContent = `${publicProductCount()} artículos publicados`;
     els.summary.textContent = `${totalMode} ${modeLabel} · ${availableCategories().length} áreas`;
     els.empty.hidden = products.length > 0;
     els.grid.replaceChildren(...visible.map(productCard));
