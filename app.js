@@ -17,57 +17,39 @@
 
   const clean = (value) => String(value ?? "").trim();
   const key = (value) => clean(value).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-  const synonymGroups = [
-    ["camara", "camera", "video"],
-    ["iluminacion", "lighting", "luces", "lights"],
-    ["sonido", "sound", "audio"],
-    ["produccion", "production"],
-    ["arriendo", "rental", "rent", "hire"],
-    ["plumon", "sharpie", "marcador", "rotulador", "marker", "permanent marker", "dry erase marker"],
-    ["masking", "masking tape", "cinta de enmascarar", "cinta para enmascarar", "cinta de papel", "scotch", "tesa"],
-    ["gaffer", "gaffer tape", "cinta gaffer", "cinta de tela"],
-    ["amarra cables", "amarracables", "brida", "precinto", "zip tie", "cable tie"],
-    ["huincha aislante", "cinta aislante", "electrical tape", "insulating tape"],
-    ["cinta doble faz", "cinta doble cara", "double sided tape", "double face tape"],
-    ["alusa", "papel aluminio", "aluminio", "alusa plas", "film plastico", "plastic wrap", "cling film"],
-    ["ziploc", "ziplock", "bolsa hermetica", "bolsa con cierre"],
-    ["cine foil", "black foil", "papel aluminio negro", "aluminio negro"],
-    ["gelatina", "gel", "filtro de color", "filtro de luz"],
-    ["clamp", "pinza", "abrazadera"],
-    ["perro de ropa", "perros de ropa", "pinza de ropa", "clothespin", "clothes peg", "c-47"],
-    ["extension", "extencion", "alargador", "cable alargador", "extension cord"],
-    ["zapatilla electrica", "regleta", "multitoma", "power strip"],
-    ["dimmer", "regulador de luz", "control de intensidad"],
-    ["brocha", "pincel"],
-    ["pila", "pilas", "bateria", "baterias", "battery", "batteries"],
-    ["limpiador de lentes", "limpia lentes", "lens cleaner", "lens cleaning"],
-    ["paño microfibra", "panito microfibra", "microfiber cloth", "microfibre cloth"],
-    ["aire comprimido", "compressed air", "canned air", "air duster"],
-    ["foam board", "carton pluma", "carton foam", "foam core"],
-    ["soquete", "portalamp ampolleta", "portalámpara", "lamp holder", "light socket"],
-    ["muselina", "muslin"],
-    ["cuerda", "cuerdas", "piola", "rope", "cord"],
-    ["correa de tension", "correas de tension", "cincha", "ratchet strap", "tie down strap"],
-    ["cubre zapatos", "shoe cover", "overshoe"],
-    ["guantes trabajo", "work gloves", "safety gloves"],
-    ["linterna cabeza", "headlamp", "head torch"],
-    ["linterna cuello", "neck light", "neck lamp"],
-    ["engrapadora", "staple gun", "stapler"],
-    ["liquido hazer", "haze fluid", "hazer fluid"],
-    ["liquido de humo", "liquido humo", "liquido para maquina de humo", "fluido de humo", "fog fluid", "smoke fluid"],
-    ["maquina de humo", "fog machine", "smoke machine"],
-    ["pesa de arena", "pesas de arena", "sandbag", "sand bag"],
-    ["tripode", "pie de luz", "light stand", "lighting stand"],
-    ["bandera", "banderas", "flag", "lighting flag"],
-    ["tamizador", "scrim", "diffusion frame"],
-    ["tela croma", "croma", "chroma", "green screen", "blue screen"]
-  ].map((group) => group.map(key));
+  const synonymGroups = (window.KIMUN_SEARCH_ALIASES || []).map((group) => group.map(key));
   function searchableProduct(product) {
     const base = key([product.name, product.brand, product.detail, product.category, product.mode].join(" "));
     const synonyms = synonymGroups
       .filter((group) => group.some((term) => base.includes(term)))
       .flat();
     return `${base} ${synonyms.join(" ")}`;
+  }
+  function editDistance(left, right) {
+    const previous = [...Array(right.length + 1).keys()];
+    for (let leftIndex = 1; leftIndex <= left.length; leftIndex += 1) {
+      const current = [leftIndex];
+      for (let rightIndex = 1; rightIndex <= right.length; rightIndex += 1) {
+        current[rightIndex] = Math.min(
+          current[rightIndex - 1] + 1,
+          previous[rightIndex] + 1,
+          previous[rightIndex - 1] + (left[leftIndex - 1] === right[rightIndex - 1] ? 0 : 1)
+        );
+      }
+      previous.splice(0, previous.length, ...current);
+    }
+    return previous[right.length];
+  }
+  function matchesSearch(haystack, query) {
+    if (!query || haystack.includes(query)) return true;
+    const compactQuery = query.replace(/\s+/g, "");
+    if (compactQuery.length >= 3 && haystack.replace(/\s+/g, "").includes(compactQuery)) return true;
+    const words = haystack.split(/\s+/).filter(Boolean);
+    return query.split(/\s+/).filter(Boolean).every((term) => words.some((word) => {
+      if (word.includes(term) || term.includes(word)) return true;
+      if (term.length < 4 || Math.abs(word.length - term.length) > 2) return false;
+      return editDistance(word, term) <= (term.length >= 8 ? 2 : 1);
+    }));
   }
   const whatsappUrl = (message) => `https://wa.me/${clean(config.whatsapp)}?text=${encodeURIComponent(message)}`;
   function loadDriveCatalog() {
@@ -153,7 +135,7 @@
     return allProducts().filter((product) => {
       const inCategory = state.category === "Todos" || product.category === state.category;
       const haystack = searchableProduct(product);
-      return inCategory && (!query || haystack.includes(query));
+      return inCategory && matchesSearch(haystack, query);
     });
   }
 
