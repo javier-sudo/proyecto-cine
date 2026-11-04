@@ -1,7 +1,10 @@
 import json
 import re
+import socket
+import time
 from pathlib import Path
 from tempfile import NamedTemporaryFile
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
@@ -11,6 +14,9 @@ CONFIG = ROOT / "dist" / "config.js"
 OUTPUT = ROOT / "dist" / "catalog-data.js"
 MAX_RESPONSE_BYTES = 2 * 1024 * 1024
 MAX_PRODUCTS = 5000
+FETCH_ATTEMPTS = 3
+FETCH_TIMEOUT_SECONDS = 90
+RETRY_DELAYS_SECONDS = (10, 25)
 ALLOWED_PRODUCT_FIELDS = {"id", "name", "brand", "detail", "availability", "mode", "category"}
 FORBIDDEN_FIELDS = {"price", "cost", "margin", "supplier"}
 
@@ -26,9 +32,9 @@ def api_url() -> str:
     return url
 
 
-def fetch_catalog(url: str) -> dict:
+def fetch_catalog_once(url: str) -> dict:
     request = Request(url, headers={"User-Agent": "KIMUN-Catalog-Sync/2.0", "Accept": "application/json"})
-    with urlopen(request, timeout=60) as response:
+    with urlopen(request, timeout=FETCH_TIMEOUT_SECONDS) as response:
         final = urlparse(response.geturl())
         if final.scheme != "https" or final.hostname not in {"script.google.com", "script.googleusercontent.com"}:
             raise RuntimeError("Apps Script redirigió a un host no permitido")
@@ -39,6 +45,28 @@ def fetch_catalog(url: str) -> dict:
     if not isinstance(payload, dict) or payload.get("success") is not True or not isinstance(payload.get("catalog"), dict):
         raise RuntimeError("Apps Script no devolvió un catálogo válido")
     return payload["catalog"]
+
+
+def is_transient(error: BaseException) -> bool:
+    if isinstance(error, HTTPError):
+        return error.code == 429 or 500 <= error.code < 600
+    return isinstance(error, (TimeoutError, socket.timeout, URLError))
+
+
+def fetch_catalog(url: str) -> dict:
+    for attempt in range(1, FETCH_ATTEMPTS + 1):
+        try:
+            return fetch_catalog_once(url)
+        except Exception as error:
+            if not is_transient(error) or attempt == FETCH_ATTEMPTS:
+                raise
+            delay = RETRY_DELAYS_SECONDS[attempt - 1]
+            print(
+                f"Aviso: Apps Script no respondió en el intento {attempt}/{FETCH_ATTEMPTS} "
+                f"({type(error).__name__}). Reintento en {delay}s.",
+                flush=True,
+            )
+            time.sleep(delay)
 
 
 def validate_catalog(catalog: dict) -> None:
@@ -106,8 +134,20 @@ def write_catalog(catalog: dict) -> None:
 
 
 if __name__ == "__main__":
-    catalog = fetch_catalog(api_url())
-    validate_catalog(catalog)
-    catalog = filter_catalog(catalog)
-    write_catalog(catalog)
-    print(f"Catálogo sanitizado: {OUTPUT.stat().st_size} bytes")
+    try:
+        catalog = fetch_catalog(api_url())
+        validate_catalog(catalog)
+        catalog = filter_catalog(catalog)
+        write_catalog(catalog)
+        print(f"Catálogo sanitizado: {OUTPUT.stat().st_size} bytes")
+    except Exception as error:
+        if not is_transient(error):
+            raise
+        if not OUTPUT.is_file() or OUTPUT.stat().st_size == 0:
+            raise
+        print(
+            "Aviso: Google no respondió después de los reintentos. "
+            "Se conserva el último catálogo público válido; el próximo ciclo volverá a intentar. "
+            f"Detalle: {type(error).__name__}: {error}",
+            flush=True,
+        )
